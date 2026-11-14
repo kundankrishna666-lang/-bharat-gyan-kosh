@@ -1,12 +1,14 @@
 /* ==========================================================================
    FILE: quiz_engine.js
-   DESCRIPTION: Dynamic Multi-Category Quiz Generator with Score Badge
+   DESCRIPTION: Dynamic Multi-Category Quiz Generator with Fresh Random Questions
+                and Professional Downloadable Digital Certificate.
    ========================================================================== */
 
 (function () {
   const quizSection = document.querySelector("#quiz .quiz-box");
   if (!quizSection) return;
 
+  // विशाल प्रश्न बैंक (विभिन्न श्रेणियों से रैंडम प्रश्न चुनने के लिए)
   const QUESTION_BANK = [
     { cat: "history", q: "सिंधु घाटी सभ्यता का कौन-सा स्थल विशाल स्नानागार (Great Bath) के लिए प्रसिद्ध है?", o: ["हड़प्पा", "मोहनजोदड़ो", "लोथल", "कालीबंगा"], a: 1, e: "मोहनजोदड़ो में विशाल सार्वजनिक स्नानागार के अवशेष मिले हैं।" },
     { cat: "history", q: "सम्राट अशोक ने किस युद्ध के बाद बौद्ध धर्म और अहिंसा का मार्ग अपनाया?", o: ["पानीपत युद्ध", "कलिंग युद्ध", "तराइन युद्ध", "बक्सर युद्ध"], a: 1, e: "261 ईसा पूर्व के कलिंग युद्ध के भीषण नरसंहार के बाद अशोक का हृदय परिवर्तन हुआ।" },
@@ -22,13 +24,42 @@
     { cat: "culture", q: "मधुबनी चित्रकला (मिथिला पेंटिंग) किस राज्य की विश्व प्रसिद्ध लोक कला है?", o: ["ओडिशा", "बिहार", "राजस्थान", "गुजरात"], a: 1, e: "मधुबनी चित्रकला बिहार के मिथिला क्षेत्र की पारंपरिक लोक कला है।" }
   ];
 
-  // नया एडवांस्ड क्विज़ इंटरफेस तैयार करना
+  // सर्टिफिकेट के लिए CSS स्टाइल जोड़ना
+  if (!document.getElementById("kb-cert-style")) {
+    const style = document.createElement("style");
+    style.id = "kb-cert-style";
+    style.textContent = `
+      .kb-cert-container {
+        background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+        border: 4px solid #d97706;
+        border-radius: 16px;
+        padding: 25px;
+        text-align: center;
+        margin-top: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+        color: #451a03;
+      }
+      .kb-cert-title { font-size: 24px; font-weight: bold; color: #b45309; margin-bottom: 4px; }
+      .kb-cert-subtitle { font-size: 13px; color: #78350f; margin-bottom: 15px; }
+      .kb-cert-name {
+        font-size: 26px; font-weight: bold; border-bottom: 2px dashed #b45309;
+        display: inline-block; padding: 0 15px; margin: 8px 0 15px 0; color: #14243d;
+      }
+      .kb-cert-footer {
+        display: flex; justify-content: space-between; margin-top: 25px;
+        font-size: 12px; font-weight: bold; color: #78350f;
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  // क्विज़ का नया लेआउट तैयार करना
   quizSection.innerHTML = `
     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:18px;padding-bottom:12px;border-bottom:1px solid var(--line);">
       <div>
-        <label for="kb-quiz-cat" style="font-size:13px;font-weight:bold;display:block;margin-bottom:4px;">🎯 विषय चुनें (Quiz Generator):</label>
+        <label for="kb-quiz-cat" style="font-size:13px;font-weight:bold;display:block;margin-bottom:4px;">🎯 विषय चुनें (Smart Quiz):</label>
         <select id="kb-quiz-cat" style="padding:8px 12px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--text);font-weight:bold;">
-          <option value="all">🌐 सभी विषय (मिश्रित प्रश्न)</option>
+          <option value="all">🌐 सभी विषय (मिश्रित नए प्रश्न)</option>
           <option value="history">🏛️ भारतीय इतिहास</option>
           <option value="constitution">📜 भारतीय संविधान</option>
           <option value="science">🔬 विज्ञान और अंतरिक्ष</option>
@@ -36,7 +67,7 @@
           <option value="culture">🎭 कला और संस्कृति</option>
         </select>
       </div>
-      <button class="btn btn-dark" id="kb-gen-quiz" style="font-size:13px;">🎲 नया क्विज़ जेनरेट करें</button>
+      <button class="btn btn-dark" id="kb-gen-quiz" style="font-size:13px;">🎲 नया क्विज़ खेलें ↻</button>
     </div>
 
     <div id="kb-quiz-play-area">
@@ -52,11 +83,23 @@
       </div>
     </div>
 
-    <div id="kb-quiz-summary" style="display:none;text-align:center;padding:20px;">
-      <div style="font-size:48px;">🏆</div>
-      <h3 id="kb-sum-title" style="font-size:24px;margin:10px 0;color:var(--saffron);">शानदार प्रदर्शन!</h3>
-      <p id="kb-sum-text" style="font-size:16px;margin-bottom:18px;"></p>
-      <button class="btn btn-dark" id="kb-sum-retry">↻ फिर से नया क्विज़ खेलें</button>
+    <div id="kb-quiz-summary" style="display:none;text-align:center;padding:15px;">
+      <div style="font-size:42px;">🏆</div>
+      <h3 id="kb-sum-title" style="font-size:22px;margin:8px 0;color:var(--saffron);">शानदार प्रदर्शन!</h3>
+      <p id="kb-sum-text" style="font-size:15px;margin-bottom:15px;"></p>
+      
+      <!-- यूज़र का नाम दर्ज करके सर्टिफिकेट लेने का बॉक्स -->
+      <div id="kb-cert-input-box" style="background:var(--bg);padding:15px;border-radius:10px;border:1px solid var(--line);margin-bottom:15px;">
+        <label style="font-size:13px;font-weight:bold;display:block;margin-bottom:6px;">📝 अपना पूरा नाम लिखें (सर्टिफिकेट के लिए):</label>
+        <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
+          <input type="text" id="kb-username-in" placeholder="यहाँ अपना नाम टाइप करें..." style="padding:10px;border-radius:8px;border:1px solid var(--line);flex:1;max-width:280px;background:#fff;color:#202b3c;">
+          <button class="btn btn-dark" id="kb-get-cert" style="font-size:13px;">🎓 डिजिटल सर्टिफिकेट प्राप्त करें</button>
+        </div>
+      </div>
+
+      <div id="kb-cert-render-area"></div>
+
+      <button class="btn btn-light" id="kb-sum-retry" style="margin-top:15px;">↻ नया क्विज़ खेलें</button>
     </div>
   `;
 
@@ -68,7 +111,8 @@
   function generateNewQuiz() {
     const cat = document.getElementById("kb-quiz-cat").value;
     let filtered = cat === "all" ? [...QUESTION_BANK] : QUESTION_BANK.filter((item) => item.cat === cat);
-    // प्रश्नों को रैंडम (Shuffle) करना
+    
+    // हर बार प्रश्नों को पूरी तरह रैंडम (Shuffle) करना ताकि नया क्विज़ मिले
     filtered.sort(() => Math.random() - 0.5);
     activePool = filtered.slice(0, 5);
     idx = 0;
@@ -76,6 +120,8 @@
 
     document.getElementById("kb-quiz-play-area").style.display = "block";
     document.getElementById("kb-quiz-summary").style.display = "none";
+    document.getElementById("kb-cert-render-area").innerHTML = "";
+    document.getElementById("kb-username-in").value = "";
     renderQuestion();
   }
 
@@ -147,6 +193,30 @@
       document.getElementById("kb-sum-title").textContent = pct >= 80 ? "🌟 भारत ज्ञान रत्न (उत्कृष्ट!)" : pct >= 50 ? "👏 बहुत अच्छा प्रयास!" : "📚 अभ्यास जारी रखें!";
       document.getElementById("kb-sum-text").textContent = `आपने ${activePool.length} में से ${score} प्रश्नों के सही उत्तर दिए (${pct}%)।`;
     }
+  };
+
+  // सर्टिफिकेट जेनरेट करने का मुख्य बटन एक्शन
+  document.getElementById("kb-get-cert").onclick = () => {
+    const nameInput = document.getElementById("kb-username-in").value.trim();
+    const finalName = nameInput || "जिज्ञासु छात्र";
+    const renderArea = document.getElementById("kb-cert-render-area");
+
+    renderArea.innerHTML = `
+      <div class="kb-cert-container">
+        <div style="font-size:32px;">🇮🇳</div>
+        <div class="kb-cert-title">प्रमाण पत्र - Certificate of Achievement</div>
+        <div class="kb-cert-subtitle">"Know About Bharat" राष्ट्रीय ज्ञान मंच द्वारा प्रमाणित किया जाता है कि</div>
+        <div class="kb-cert-name">${finalName}</div>
+        <p style="font-size:14px;line-height:1.5;">
+          ने 'भारत को जानो' राष्ट्रीय ज्ञान प्रतियोगिता में सफलतापूर्वक भाग लेकर ${activePool.length} में से <strong>${score}</strong> अंक प्राप्त किए हैं।
+        </p>
+        <div class="kb-cert-footer">
+          <div>दिनांक: ${new Date().toLocaleDateString("hi-IN")}</div>
+          <div>🏆 प्लेटफॉर्म: Know About Bharat</div>
+        </div>
+        <button class="btn btn-dark" onclick="window.print()" style="margin-top:15px;font-size:13px;">🖨️ प्रमाण पत्र प्रिंट / PDF डाउनलोड करें</button>
+      </div>
+    `;
   };
 
   document.getElementById("kb-gen-quiz").onclick = generateNewQuiz;
