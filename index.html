@@ -1,0 +1,220 @@
+
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Know About Bharat 🇮🇳</title>
+  <meta name="description" content="भारत के इतिहास, संस्कृति, विज्ञान और महान व्यक्तित्वों को जानें।">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f7fb;
+      color: #172033;
+      line-height: 1.6;
+    }
+    header {
+      background: linear-gradient(120deg, #ff9933, #fff 55%, #138808);
+      padding: 45px 20px;
+      text-align: center;
+    }
+    header h1 { font-size: 2.5rem; color: #172033; }
+    header p { margin-top: 10px; font-size: 1.1rem; }
+    nav {
+      background: #172033;
+      padding: 14px;
+      text-align: center;
+    }
+    nav a {
+      color: white;
+      text-decoration: none;
+      margin: 0 12px;
+      font-weight: bold;
+    }
+    .container { max-width: 1100px; margin: 30px auto; padding: 0 18px; }
+    .intro {
+      background: white;
+      padding: 25px;
+      border-radius: 14px;
+      margin-bottom: 25px;
+      text-align: center;
+      box-shadow: 0 3px 14px #0000000d;
+    }
+    .search {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid #ccd3df;
+      border-radius: 10px;
+      font-size: 16px;
+      margin: 15px 0 25px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 20px;
+    }
+    .card {
+      background: white;
+      padding: 22px;
+      border-radius: 14px;
+      box-shadow: 0 3px 14px #0000000d;
+      transition: transform .2s;
+    }
+    .card:hover { transform: translateY(-5px); }
+    .card .emoji { font-size: 2.5rem; }
+    .card h3 { margin: 10px 0; color: #e87516; }
+    .card button {
+      margin-top: 14px;
+      padding: 10px 16px;
+      border: 0;
+      border-radius: 8px;
+      background: #172033;
+      color: white;
+      cursor: pointer;
+    }
+    .card button:hover { background: #e87516; }
+    #details {
+      display: none;
+      background: white;
+      padding: 25px;
+      border-radius: 14px;
+      margin-top: 25px;
+      box-shadow: 0 3px 14px #0000000d;
+    }
+    #details button {
+      margin-top: 15px;
+      padding: 9px 15px;
+      border: 0;
+      background: #172033;
+      color: white;
+      border-radius: 7px;
+      cursor: pointer;
+    }
+    footer {
+      background: #172033;
+      color: white;
+      text-align: center;
+      padding: 25px;
+      margin-top: 45px;
+    }
+    @media(max-width:600px) {
+      header h1 { font-size: 2rem; }
+      nav a { display: inline-block; margin: 5px 8px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>🇮🇳 Know About Bharat</h1>
+  <p>भारत को जानो, भारत को समझो, भारत पर गर्व करो।</p>
+</header>
+
+<nav>
+  <a href="#home">होम</a>
+  <a href="#topics">विषय</a>
+  <a href="#about">हमारे बारे में</a>
+</nav>
+
+<main class="container" id="home">
+  <section class="intro">
+    <h2>भारत ज्ञान का महासागर है</h2>
+    <p>भारत के इतिहास, संस्कृति, विज्ञान, संविधान और महान व्यक्तित्वों की रोचक जानकारी एक ही जगह प्राप्त करें।</p>
+  </section>
+
+  <h2 id="topics">भारत के प्रमुख विषय</h2>
+  <input class="search" id="search" type="search" placeholder="कोई विषय खोजें..." aria-label="विषय खोजें">
+
+  <section class="grid" id="cards">
+    <article class="card" data-search="इतिहास प्राचीन भारत सभ्यता">
+      <div class="emoji">🏛️</div>
+      <h3>भारतीय इतिहास</h3>
+      <p>प्राचीन सभ्यताओं से आधुनिक भारत तक की यात्रा।</p>
+      <button onclick="showDetails('history')">और जानें</button>
+    </article>
+
+    <article class="card" data-search="संस्कृति परंपरा त्योहार कला">
+      <div class="emoji">🎭</div>
+      <h3>भारतीय संस्कृति</h3>
+      <p>भारत की भाषाएँ, परंपराएँ, त्योहार और कलाएँ।</p>
+      <button onclick="showDetails('culture')">और जानें</button>
+    </article>
+
+    <article class="card" data-search="विज्ञान गणित खोज आविष्कार">
+      <div class="emoji">🔬</div>
+      <h3>विज्ञान और ज्ञान</h3>
+      <p>भारत का विज्ञान, गणित और तकनीकी योगदान।</p>
+      <button onclick="showDetails('science')">और जानें</button>
+    </article>
+
+    <article class="card" data-search="संविधान लोकतंत्र अधिकार">
+      <div class="emoji">📜</div>
+      <h3>भारतीय संविधान</h3>
+      <p>लोकतंत्र, मौलिक अधिकार और नागरिक कर्तव्य।</p>
+      <button onclick="showDetails('constitution')">और जानें</button>
+    </article>
+
+    <article class="card" data-search="महान व्यक्तित्व स्वतंत्रता सेनानी">
+      <div class="emoji">🌟</div>
+      <h3>महान व्यक्तित्व</h3>
+      <p>भारत के प्रेरणादायक नेताओं और विचारकों का परिचय।</p>
+      <button onclick="showDetails('people')">और जानें</button>
+    </article>
+
+    <article class="card" data-search="भूगोल नदियां पर्वत राज्य">
+      <div class="emoji">🌏</div>
+      <h3>भारत का भूगोल</h3>
+      <p>भारत के राज्य, नदियाँ, पर्वत और प्राकृतिक विविधता।</p>
+      <button onclick="showDetails('geography')">और जानें</button>
+    </article>
+  </section>
+
+  <section id="details" aria-live="polite">
+    <h2 id="detailTitle"></h2>
+    <p id="detailText"></p>
+    <button onclick="closeDetails()">बंद करें</button>
+  </section>
+
+  <section class="intro" id="about" style="margin-top:30px">
+    <h2>हमारा उद्देश्य</h2>
+    <p>Know About Bharat का उद्देश्य भारत के बारे में उपयोगी और ज्ञानवर्धक जानकारी सरल भाषा में प्रस्तुत करना है।</p>
+  </section>
+</main>
+
+<footer>
+  <p>🇮🇳 Know About Bharat | ज्ञान • संस्कृति • भारत</p>
+</footer>
+
+<script>
+  const information = {
+    history: ["भारतीय इतिहास", "भारत का इतिहास सिंधु घाटी सभ्यता, वैदिक काल, अनेक प्राचीन राज्यों, साम्राज्यों और स्वतंत्रता आंदोलन जैसी महत्वपूर्ण घटनाओं से समृद्ध है।"],
+    culture: ["भारतीय संस्कृति", "भारत में अनेक भाषाएँ, संगीत परंपराएँ, नृत्य, त्योहार, खान-पान और कलात्मक परंपराएँ मिलती हैं। यही विविधता भारत की विशेष पहचान है।"],
+    science: ["विज्ञान और ज्ञान", "भारत ने गणित, खगोल विज्ञान, चिकित्सा और आधुनिक अंतरिक्ष अनुसंधान सहित अनेक क्षेत्रों में योगदान दिया है।"],
+    constitution: ["भारतीय संविधान", "भारत का संविधान 26 जनवरी 1950 को लागू हुआ। यह देश की शासन व्यवस्था, नागरिकों के अधिकारों और संस्थाओं का आधार है।"],
+    people: ["महान व्यक्तित्व", "भारत के इतिहास में अनेक समाज सुधारकों, वैज्ञानिकों, शिक्षकों, कलाकारों और स्वतंत्रता सेनानियों ने महत्वपूर्ण योगदान दिया है।"],
+    geography: ["भारत का भूगोल", "भारत में हिमालय, विशाल मैदान, पठार, रेगिस्तान, समुद्र तट और अनेक नदियाँ हैं। यहाँ प्राकृतिक और जलवायु संबंधी विविधता देखने को मिलती है।"]
+  };
+
+  function showDetails(key) {
+    document.getElementById("detailTitle").textContent = information[key][0];
+    document.getElementById("detailText").textContent = information[key][1];
+    document.getElementById("details").style.display = "block";
+    document.getElementById("details").scrollIntoView({ behavior: "smooth" });
+  }
+
+  function closeDetails() {
+    document.getElementById("details").style.display = "none";
+  }
+
+  document.getElementById("search").addEventListener("input", function () {
+    const query = this.value.trim().toLowerCase();
+    document.querySelectorAll(".card").forEach(card => {
+      const words = (card.innerText + " " + card.dataset.search).toLowerCase();
+      card.style.display = words.includes(query) ? "" : "none";
+    });
+  });
+</script>
+
+</body>
+</html>
