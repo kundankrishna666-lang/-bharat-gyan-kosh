@@ -1261,6 +1261,134 @@ renderSaved();sync();apply();gate();
 })();
 </script>
 <!-- ═══ BHARAT ADD-ON v1 END ═══ -->
+<!-- ═══ BHARAT ADD-ON v2 START ═══
+  v1 वाले ब्लॉक के ठीक बाद, </body> से पहले चिपकाएँ। पुराना कोड नहीं बदलना। -->
+<style>
+.section{content-visibility:auto;contain-intrinsic-size:auto 600px}
+.kab-ans{border:2px solid #e97824;border-radius:12px;padding:12px;margin-bottom:8px;background:#fff8f0;color:#202b3c}
+.kab-ans h4{margin:0 0 6px;color:#c7651b}.kab-ans iframe{width:100%;height:240px;border:0;border-radius:10px;margin-top:8px}
+.kab-wiki{border:1px solid #e5e9f0;border-radius:12px;padding:12px;margin-bottom:8px}
+.kab-locked{position:relative}.kab-locked>:not(.kab-lockbar){filter:blur(10px);pointer-events:none;user-select:none}
+.kab-lockbar{position:absolute;inset:0;z-index:5;display:flex;align-items:center;justify-content:center}
+html[data-lite] img{display:none!important}
+html[data-theme=dark] :is(.kab-ans,.kab-wiki){background:#182236!important;color:#e6ebf5!important;border-color:#2a3750!important}
+</style>
+<script>
+(function(){
+const $=(s,r=document)=>r.querySelector(s),esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const L={g(k,d){try{const v=localStorage.getItem('kab_'+k);return v===null?d:JSON.parse(v)}catch(e){return d}},s(k,v){try{localStorage.setItem('kab_'+k,JSON.stringify(v))}catch(e){}}};
+const toast=t=>{const e=$('#ba-toast');if(!e)return;e.textContent=t;e.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>e.style.display='none',3200)};
+const norm=s=>String(s).toLowerCase().replace(/[ंँ़\u200d\u200c]/g,'');
+const btn=(t,f,c)=>{const b=document.createElement('button');b.className='ba-btn sm'+(c?' '+c:'');b.textContent=t;b.onclick=f;return b};
+
+/* ===== 1. सवाल-जवाब खोज (बिना AI): राज्य/UT का ज्ञान + नक्शा + Wikipedia ===== */
+/* [नाम, English, स्थान; पड़ोस, जानकारी, अक्षांश, देशांतर, नक्शे का दायरा] */
+const D=[
+['आंध्र प्रदेश','andhra pradesh','दक्षिण-पूर्वी भारत, बंगाल की खाड़ी के तट पर; पड़ोस में तेलंगाना, कर्नाटक, तमिलनाडु, ओडिशा, छत्तीसगढ़','भाषा: तेलुगु; तिरुपति, विशाखापत्तनम',16,80,3],
+['अरुणाचल प्रदेश','arunachal pradesh','सुदूर उत्तर-पूर्व; पड़ोस में असम, नागालैंड; चीन (तिब्बत), म्यांमार, भूटान से सीमा','"उगते सूर्य की भूमि"; तवांग मठ, अनेक जनजातीय भाषाएँ',28,94.5,2.5],
+['असम','assam','उत्तर-पूर्व भारत, ब्रह्मपुत्र घाटी; पड़ोस में अरुणाचल, नागालैंड, मणिपुर, मिज़ोरम, त्रिपुरा, मेघालय, पश्चिम बंगाल; भूटान व बांग्लादेश से सीमा','भाषा: असमिया; चाय, काज़ीरंगा',26.2,92.9,2.5],
+['बिहार','bihar','पूर्वी भारत; उत्तर में नेपाल, पश्चिम में उत्तर प्रदेश, दक्षिण में झारखंड, पूर्व में पश्चिम बंगाल','भाषा: हिंदी, मैथिली, भोजपुरी, मगही; नालंदा, बोधगया, पाटलिपुत्र',25.6,85.6,2.5],
+['छत्तीसगढ़','chhattisgarh','मध्य भारत; पड़ोस में मध्य प्रदेश, महाराष्ट्र, तेलंगाना, आंध्र प्रदेश, ओडिशा, झारखंड, उत्तर प्रदेश','भाषा: हिंदी, छत्तीसगढ़ी; वन, खनिज, "धान का कटोरा"',21.3,81.8,2.5],
+['गोवा','goa','पश्चिमी तट, अरब सागर के किनारे; पड़ोस में महाराष्ट्र और कर्नाटक','भाषा: कोंकणी; समुद्र तट, पुराने चर्च; क्षेत्रफल में सबसे छोटा राज्य',15.4,74,0.8],
+['गुजरात','gujarat','पश्चिमी भारत; पड़ोस में राजस्थान, मध्य प्रदेश, महाराष्ट्र; अरब सागर का तट, पाकिस्तान से सीमा','भाषा: गुजराती; सबसे लंबी तटरेखा वाला राज्य, गिर के शेर, रण ऑफ़ कच्छ',22.3,71.5,3.5],
+['हरियाणा','haryana','उत्तर भारत; पड़ोस में पंजाब, हिमाचल, उत्तराखंड, उत्तर प्रदेश, राजस्थान; दिल्ली को तीन ओर से घेरता है','भाषा: हिंदी, हरियाणवी; कुरुक्षेत्र, कृषि',29,76.1,2],
+['हिमाचल प्रदेश','himachal pradesh','उत्तर भारत, हिमालय में; पड़ोस में जम्मू-कश्मीर, लद्दाख, पंजाब, हरियाणा, उत्तराखंड; चीन (तिब्बत) से सीमा','भाषा: हिंदी, पहाड़ी; शिमला, मनाली, सेब',31.9,77.2,2],
+['झारखंड','jharkhand','पूर्वी भारत; पड़ोस में बिहार, उत्तर प्रदेश, छत्तीसगढ़, ओडिशा, पश्चिम बंगाल','भाषा: हिंदी, संथाली; कोयला-लोहा जैसे खनिज, जमशेदपुर',23.6,85.3,2.5],
+['कर्नाटक','karnataka','दक्षिण भारत; पड़ोस में महाराष्ट्र, गोवा, केरल, तमिलनाडु, आंध्र प्रदेश, तेलंगाना; पश्चिम में अरब सागर','भाषा: कन्नड़; बेंगलुरु (IT), हम्पी, मैसूर',15.3,75.7,3],
+['केरल','kerala','दक्षिण-पश्चिमी तट, अरब सागर के किनारे; पड़ोस में कर्नाटक और तमिलनाडु','भाषा: मलयालम; बैकवाटर, मसाले, उच्च साक्षरता',10.5,76.3,2.5],
+['मध्य प्रदेश','madhya pradesh','मध्य भारत; पड़ोस में उत्तर प्रदेश, राजस्थान, गुजरात, महाराष्ट्र, छत्तीसगढ़','भाषा: हिंदी; साँची, खजुराहो, उज्जैन',23.5,78.5,3.5],
+['महाराष्ट्र','maharashtra','पश्चिम-मध्य भारत, अरब सागर के तट पर; पड़ोस में गुजरात, मध्य प्रदेश, छत्तीसगढ़, तेलंगाना, कर्नाटक, गोवा','भाषा: मराठी; मुंबई, अजंता-एलोरा',19.5,76,3.5],
+['मणिपुर','manipur','उत्तर-पूर्व भारत; पड़ोस में नागालैंड, असम, मिज़ोरम; म्यांमार से सीमा','भाषा: मणिपुरी; लोकटक झील, मणिपुरी नृत्य',24.8,93.9,1.5],
+['मेघालय','meghalaya','उत्तर-पूर्व भारत; पड़ोस में असम; बांग्लादेश से सीमा','भाषा: खासी, गारो; "बादलों का घर", चेरापूंजी–मावसिनराम',25.5,91.3,1.5],
+['मिज़ोरम','mizoram','उत्तर-पूर्व भारत; पड़ोस में त्रिपुरा, असम, मणिपुर; म्यांमार व बांग्लादेश से सीमा','भाषा: मिज़ो; पहाड़ी भू-दृश्य, उच्च साक्षरता',23.3,92.8,1.5],
+['नागालैंड','nagaland','उत्तर-पूर्व भारत; पड़ोस में अरुणाचल, असम, मणिपुर; म्यांमार से सीमा','भाषा: अंग्रेज़ी (राजभाषा), नागा भाषाएँ; हॉर्नबिल महोत्सव',26.1,94.5,1.5],
+['ओडिशा','odisha','पूर्वी तट, बंगाल की खाड़ी के किनारे; पड़ोस में पश्चिम बंगाल, झारखंड, छत्तीसगढ़, आंध्र प्रदेश','भाषा: ओड़िया; कोणार्क सूर्य मंदिर, पुरी का जगन्नाथ मंदिर',20.5,84.5,3],
+['पंजाब','punjab','उत्तर-पश्चिम भारत; पड़ोस में हिमाचल, हरियाणा, राजस्थान, जम्मू-कश्मीर; पाकिस्तान से सीमा','भाषा: पंजाबी; स्वर्ण मंदिर (अमृतसर), गेहूँ-धान की खेती',31,75.3,2],
+['राजस्थान','rajasthan','उत्तर-पश्चिम भारत; पड़ोस में पंजाब, हरियाणा, उत्तर प्रदेश, मध्य प्रदेश, गुजरात; पाकिस्तान से सीमा','भाषा: हिंदी, राजस्थानी; क्षेत्रफल में सबसे बड़ा राज्य, थार मरुस्थल, किले-महल',26.6,73.9,4],
+['सिक्किम','sikkim','पूर्वी हिमालय; पड़ोस में पश्चिम बंगाल; नेपाल, चीन (तिब्बत), भूटान से सीमा','भाषा: नेपाली, अंग्रेज़ी; कंचनजंगा, जैविक खेती',27.6,88.5,1],
+['तमिलनाडु','tamil nadu','दक्षिण भारत, पूर्वी तट; पड़ोस में केरल, कर्नाटक, आंध्र प्रदेश; बंगाल की खाड़ी व हिंद महासागर','भाषा: तमिल; द्रविड़ मंदिर स्थापत्य, चेन्नई',11,78.5,3],
+['तेलंगाना','telangana','दक्षिण-मध्य भारत; पड़ोस में महाराष्ट्र, छत्तीसगढ़, आंध्र प्रदेश, कर्नाटक','भाषा: तेलुगु, उर्दू; हैदराबाद, चारमीनार',17.9,79.1,2.5],
+['त्रिपुरा','tripura','उत्तर-पूर्व भारत; पड़ोस में असम, मिज़ोरम; तीन ओर से बांग्लादेश से घिरा','भाषा: बंगाली, कोकबोरोक; उनाकोटि की शिलामूर्तियाँ',23.8,91.5,1.2],
+['उत्तर प्रदेश','uttar pradesh','उत्तर भारत; पड़ोस में उत्तराखंड, हिमाचल, हरियाणा, दिल्ली, राजस्थान, मध्य प्रदेश, छत्तीसगढ़, झारखंड, बिहार; नेपाल से सीमा','भाषा: हिंदी; सबसे अधिक आबादी वाला राज्य, आगरा, वाराणसी, गंगा-यमुना',26.8,80.9,4],
+['उत्तराखंड','uttarakhand','उत्तर भारत, हिमालय में; पड़ोस में हिमाचल, उत्तर प्रदेश; नेपाल व चीन (तिब्बत) से सीमा','भाषा: हिंदी, गढ़वाली, कुमाऊँनी; चारधाम, हरिद्वार–ऋषिकेश',30.1,79.3,2],
+['पश्चिम बंगाल','west bengal','पूर्वी भारत; पड़ोस में बिहार, झारखंड, ओडिशा, सिक्किम, असम; नेपाल, भूटान, बांग्लादेश से सीमा','भाषा: बंगाली; कोलकाता, सुंदरबन, दार्जिलिंग की चाय',23.5,87.9,3],
+['अंडमान और निकोबार','andaman and nicobar','बंगाल की खाड़ी में द्वीप-समूह, मुख्य भूमि से दूर दक्षिण-पूर्व में','सेलुलर जेल, समुद्री द्वीप',11.7,92.7,4],
+['चंडीगढ़','chandigarh','उत्तर भारत; पंजाब व हरियाणा से घिरा, दोनों की साझा राजधानी','नियोजित शहर',30.74,76.78,.4],
+['दादरा और नगर हवेली','dadra and nagar haveli','पश्चिमी भारत; गुजरात और महाराष्ट्र के बीच','दमन-दीव के साथ एक केंद्रशासित प्रदेश',20.2,73,.7],
+['दिल्ली','delhi','उत्तर भारत; हरियाणा और उत्तर प्रदेश से घिरी','देश की राजधानी; लाल किला, इंडिया गेट',28.6,77.2,.7],
+['जम्मू और कश्मीर','jammu and kashmir','सुदूर उत्तर भारत, हिमालय में','श्रीनगर, डल झील, वैष्णो देवी',33.8,75.1,2.5],
+['लद्दाख','ladakh','उत्तर भारत, ऊँचे हिमालयी रेगिस्तान में','लेह, पैंगोंग झील, बौद्ध मठ',34.2,77.6,3],
+['लक्षद्वीप','lakshadweep','अरब सागर में, केरल तट के पश्चिम में द्वीप-समूह','प्रवाल द्वीप, साफ़ लैगून',10.6,72.6,2],
+['पुडुचेरी','puducherry','दक्षिण-पूर्वी तट; अधिकांश हिस्सा तमिलनाडु से घिरा','पूर्व फ़्रांसीसी बस्ती, ऑरोविल',11.9,79.8,.8]];
+const NAMES=D.flatMap(r=>[[norm(r[0]),r],[r[1],r]]).sort((a,b)=>b[0].length-a[0].length);
+const ent=v=>{const n=norm(v);const m=NAMES.find(x=>/[a-z]/.test(x[0])?new RegExp('(^|[^a-z])'+x[0]+'($|[^a-z])').test(n):n.includes(x[0]));return m&&m[1]};
+const STOP=new Set('क्या है हैं किधर कहाँ कहां कहा में का की के को कौन कैसे बताओ बताइए बताएं what is are where the of in about tell me'.split(' '));
+const clean=q=>q.split(/\s+/).filter(w=>!STOP.has(w.toLowerCase())).join(' ')||q;
+function answer(r,v){const n=norm(v),cp=typeof states!=='undefined'?[...states,...uts].find(a=>a[0].startsWith(r[0])):0,c=cp&&cp[1],wh=/किधर|कहा|स्थित|location|where|map|नक्शा|लोकेशन/.test(n);
+ const first=/राजधानी|capital/.test(n)&&c?r[0]+' की राजधानी '+c+' है।':wh?r[0]+' का स्थान: '+r[2].split(';')[0]+'।':'';
+ const d=document.createElement('div');d.className='kab-ans';
+ d.innerHTML='<h4>'+esc(r[0])+'</h4>'+(first?'<p><b>'+esc(first)+'</b></p>':'')+'<p style="font-size:14px;line-height:1.7">📍 '+esc(r[2])+(c?'<br>🏛️ राजधानी: '+esc(c):'')+'<br>ℹ️ '+esc(r[3])+'</p>';
+ const b=btn('🗺️ नक्शा देखें',()=>{const s=r[6];b.insertAdjacentHTML('afterend','<iframe loading="lazy" title="नक्शा" src="https://www.openstreetmap.org/export/embed.html?bbox='+[r[5]-s*1.2,r[4]-s*.8,r[5]+s*1.2,r[4]+s*.8].map(x=>x.toFixed(3))+'&layer=mapnik"></iframe>');b.remove()});
+ d.appendChild(b);if(wh)b.click();return d}
+const WC=new Map();let ctl=new AbortController(),TOK=0,tm;
+async function wiki(q,tok,box){const hi=/[\u0900-\u097F]/.test(q),k=(hi?'h':'e')+q;let r=WC.get(k);
+ if(!r){try{const l=hi?'hi':'en',j=await (await fetch('https://'+l+'.wikipedia.org/w/api.php?action=query&generator=search&gsrlimit=1&gsrsearch='+encodeURIComponent(q)+'&prop=extracts&exintro=1&explaintext=1&exchars=450&format=json&origin=*',{signal:ctl.signal})).json(),p=Object.values((j.query||{}).pages||{})[0];
+  r=p?{t:p.title,x:p.extract,u:'https://'+l+'.wikipedia.org/?curid='+p.pageid}:{};WC.set(k,r)}catch(e){return}}
+ if(tok!==TOK||!r.x)return;
+ box.innerHTML='<div class="kab-wiki"><b>📖 '+esc(r.t)+'</b> <small>(Wikipedia)</small><p style="margin:6px 0;font-size:14px;line-height:1.7">'+esc(r.x)+'</p><a href="'+esc(r.u)+'" target="_blank" rel="noopener">पूरा लेख पढ़ें ↗</a></div>'}
+const Q=$('#ba-q'),R=$('#ba-res');
+if(Q&&R)Q.addEventListener('input',()=>{const v=Q.value.trim();clearTimeout(tm);ctl.abort();ctl=new AbortController();const tok=++TOK;if(v.length<2)return;
+ const e=ent(v),box=document.createElement('div');R.style.display='block';R.prepend(box);if(e)R.prepend(answer(e,v));
+ tm=setTimeout(()=>wiki(clean(e?e[0]:v),tok,box),450)});
+
+/* ===== 2. शोध पत्र पुस्तकालय: खोज + फ़ोन (IndexedDB) में सेव ===== */
+const DB=()=>new Promise((ok,no)=>{const r=indexedDB.open('kab',1);r.onupgradeneeded=()=>r.result.createObjectStore('papers',{keyPath:'id'});r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error)});
+const tx=async(m,f)=>{const d=await DB();return new Promise((ok,no)=>{const t=d.transaction('papers',m),q=f(t.objectStore('papers'));t.oncomplete=()=>ok(q.result);t.onerror=()=>no(t.error)})};
+const P=document.createElement('section');P.className='section';P.id='ba-papers';
+P.innerHTML='<div class="section-heading"><h2>📄 शोध पत्र पुस्तकालय</h2><p>मुफ़्त शोध पत्र खोजें, अपने फ़ोन में रखें, कभी भी पढ़ें। फ़ाइलें सिर्फ़ आपके फ़ोन में रहती हैं।</p></div><div class="card"><div style="display:flex;gap:8px"><input id="pp-in" class="ba-in" style="margin:0" placeholder="विषय (अंग्रेज़ी में बेहतर): Indus Valley, ISRO…"><button class="ba-btn" id="pp-go">खोजें</button></div><div id="pp-out" class="ba-grid"></div><h3 style="margin-top:22px">📚 मेरी लाइब्रेरी</h3><p id="pp-info" style="font-size:13px;color:#667085"></p><label class="ba-btn sm alt" style="display:inline-block">📎 अपनी PDF जोड़ें<input id="pp-file" type="file" accept="application/pdf" multiple hidden></label><div id="pp-lib"></div></div>';
+(document.getElementById('ba-saved')||document.getElementById('sources')||document.body).before(P);
+async function lib(){try{const l=await tx('readonly',s=>s.getAll()),o=$('#pp-lib');o.innerHTML=l.length?'':'<p style="color:#667085">अभी कोई PDF नहीं।</p>';
+ l.sort((a,b)=>b.d-a.d).forEach(p=>{const r=document.createElement('div');r.style.cssText='display:flex;gap:6px;flex-wrap:wrap;align-items:center;padding:8px 0;border-bottom:1px solid #e5e9f0';
+  r.innerHTML='<span style="flex:1;min-width:160px"><b>'+esc(p.title)+'</b><br><small>'+esc(p.meta||'')+' · '+(p.blob.size/1048576).toFixed(1)+' MB</small></span>';
+  r.append(btn('📖 खोलें',()=>window.open(URL.createObjectURL(p.blob),'_blank')),btn('⬇️ फ़ाइल',()=>{const a=document.createElement('a');a.href=URL.createObjectURL(p.blob);a.download=p.title.slice(0,60).replace(/[^\w\u0900-\u097F]+/g,'_')+'.pdf';a.click()}),btn('🗑️',async()=>{await tx('readwrite',s=>s.delete(p.id));lib()}));o.appendChild(r)});
+ if(navigator.storage&&navigator.storage.estimate){const e=await navigator.storage.estimate();$('#pp-info').textContent='फ़ोन में उपयोग: '+(e.usage/1048576).toFixed(0)+' MB'}}catch(e){$('#pp-lib').textContent='इस ब्राउज़र में लाइब्रेरी उपलब्ध नहीं (प्राइवेट मोड?)'}}
+async function keep(url,title,meta,id){toast('डाउनलोड हो रहा है…');
+ try{const r=await fetch(url);if(!r.ok)throw 0;const b=await r.blob();if(b.size<2000||!/pdf|octet/.test(b.type))throw 0;await tx('readwrite',s=>s.put({id,title,meta,blob:b,d:Date.now()}));if(navigator.storage&&navigator.storage.persist)navigator.storage.persist();toast('📚 आपकी लाइब्रेरी में रख लिया');lib()}
+ catch(e){toast('इस स्रोत ने सीधे सेव की अनुमति नहीं दी। PDF खोलकर डाउनलोड करें, फिर "📎 अपनी PDF जोड़ें" से यहाँ रखें।');window.open(url,'_blank','noopener')}}
+async function pp(){const q=$('#pp-in').value.trim(),o=$('#pp-out');if(!q)return;o.textContent='खोज रहे हैं…';
+ try{const j=await (await fetch('https://api.openalex.org/works?per-page=12&filter=open_access.is_oa:true&select=id,display_name,publication_year,authorships,best_oa_location,open_access&search='+encodeURIComponent(q))).json();
+  o.textContent=j.results.length?'':'कुछ नहीं मिला।';
+  j.results.forEach(w=>{const u=(w.best_oa_location&&w.best_oa_location.pdf_url)||'',pg=(w.open_access&&w.open_access.oa_url)||u,meta=w.authorships.slice(0,3).map(a=>a.author.display_name).join(', ')+' · '+(w.publication_year||''),d=document.createElement('div');
+   d.className='ba-card';d.innerHTML='<b>'+esc(w.display_name||'(शीर्षक नहीं)')+'</b><br><small>'+esc(meta)+'</small><br>';
+   if(u)d.appendChild(btn('⬇️ फ़ोन में रखें',()=>keep(u,w.display_name,meta,w.id)));if(pg)d.appendChild(btn('🔗 स्रोत',()=>window.open(pg,'_blank','noopener')));o.appendChild(d)})}
+ catch(e){o.textContent='इंटरनेट या सर्वर की समस्या। थोड़ी देर बाद फिर कोशिश करें।'}}
+$('#pp-go').onclick=pp;$('#pp-in').addEventListener('keydown',e=>{if(e.key==='Enter')pp()});
+$('#pp-file').onchange=async e=>{let i=0;for(const f of e.target.files)await tx('readwrite',s=>s.put({id:'f-'+Date.now()+'-'+i++,title:f.name.replace(/\.pdf$/i,''),meta:'मेरी फ़ाइल',blob:f,d:Date.now()}));e.target.value='';lib();toast('📚 जोड़ दी गई')};
+lib();
+
+/* ===== 3. फ़ोन-लॉक: फ़ोन की अपनी सुरक्षा (फिंगरप्रिंट/PIN/पैटर्न) से ===== */
+const b64=u=>btoa(String.fromCharCode(...new Uint8Array(u))),ub=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0)),rnd=n=>crypto.getRandomValues(new Uint8Array(n));
+let until=0;const PROT=['ba-saved','ba-papers'],lockOn=()=>!!L.g('lockId',null);
+function paint(){PROT.forEach(id=>{const s=document.getElementById(id);if(!s)return;const lk=lockOn()&&Date.now()>until;s.classList.toggle('kab-locked',lk);let bar=$('.kab-lockbar',s);
+ if(lk&&!bar){bar=document.createElement('div');bar.className='kab-lockbar';bar.appendChild(btn('🔓 फ़ोन-लॉक से खोलें',verify));bar.firstChild.className='ba-btn';s.appendChild(bar)}if(!lk&&bar)bar.remove()})}
+async function verify(){try{await navigator.credentials.get({publicKey:{challenge:rnd(32),allowCredentials:[{type:'public-key',id:ub(L.g('lockId'))}],userVerification:'required',timeout:60000}});until=Date.now()+3e5;paint();return true}catch(e){toast('अनलॉक नहीं हो पाया');return false}}
+async function enable(){if(!window.PublicKeyCredential){toast('इस ब्राउज़र में फ़ोन-लॉक उपलब्ध नहीं');return false}
+ try{const c=await navigator.credentials.create({publicKey:{challenge:rnd(32),rp:{name:'Know About Bharat'},user:{id:rnd(16),name:'local',displayName:'मैं'},pubKeyCredParams:[{type:'public-key',alg:-7},{type:'public-key',alg:-257}],authenticatorSelection:{authenticatorAttachment:'platform',userVerification:'required'},timeout:60000}});L.s('lockId',b64(c.rawId));until=Date.now()+3e5;paint();return true}
+ catch(e){toast('चालू नहीं हो पाया। फ़ोन में स्क्रीन-लॉक/फिंगरप्रिंट सेट होना चाहिए।');return false}}
+setInterval(paint,15000);document.addEventListener('visibilitychange',()=>{if(document.hidden)until=0;else paint()});paint();
+
+/* ===== 4. सेटिंग में नए विकल्प + तेज़/कम-डेटा मोड + ऑफ़लाइन कैश ===== */
+const c=navigator.connection;if(L.g('lite',null)===null&&c&&(c.saveData||/2g/.test(c.effectiveType||'')))L.s('lite',true);
+const lite=()=>document.documentElement.toggleAttribute('data-lite',!!L.g('lite',false));lite();
+const st=$('#ba-set');
+if(st){st.insertAdjacentHTML('beforeend','<h4>🔒 सुरक्षा और स्पीड</h4><label><input type="checkbox" id="x-lock"> फ़ोन-लॉक (फिंगरप्रिंट/PIN) से सेव किया हुआ और पुस्तकालय बंद रखें</label><label><input type="checkbox" id="x-lite"> ⚡ तेज़ / कम-डेटा मोड (तस्वीरें छुपाएँ)</label><p style="font-size:12px;color:#667085">फ़ोन-लॉक आपके फ़ोन की अपनी सुरक्षा से खुलता है; कोई पासवर्ड या सर्वर नहीं। 5 मिनट बाद फिर बंद हो जाता है।</p>');
+ $('#x-lock').checked=lockOn();$('#x-lite').checked=!!L.g('lite',false);
+ $('#x-lock').onchange=async e=>{if(e.target.checked){if(!(await enable()))e.target.checked=false}else if(await verify()){localStorage.removeItem('kab_lockId');paint()}else e.target.checked=true};
+ $('#x-lite').onchange=e=>{L.s('lite',e.target.checked);lite()}}
+if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+})();
+</script>
+<!-- ═══ BHARAT ADD-ON v2 END ═══ -->
 
 </body>
 </html>
