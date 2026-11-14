@@ -1090,6 +1090,177 @@ showQuestion();
 </script>
 
 <!-- BHARAT RESOURCE FINDER END -->
+<!-- ═══ BHARAT ADD-ON v1 START ═══
+  इसे अपनी फ़ाइल में </body> से ठीक पहले चिपकाएँ (Resource Finder के आख़िरी </script> के बाद)।
+  पुराना कोड बिल्कुल नहीं बदलना है। -->
+<style>
+#ba-gate{position:fixed;inset:0;z-index:100;background:linear-gradient(110deg,#ff9933,#fff 50%,#138808);display:flex;align-items:center;justify-content:center;padding:18px}
+.ba-box{background:#fff;color:#202b3c;border-radius:16px;padding:26px;max-width:420px;width:100%;box-shadow:0 10px 40px #0003;text-align:center}
+.ba-in{width:100%;padding:12px;border:1px solid #d8dee8;border-radius:9px;margin:10px 0;background:#fff;color:#202b3c}
+.ba-btn{border:0;border-radius:9px;padding:11px 18px;background:#14243d;color:#fff;font-weight:bold;cursor:pointer;margin:3px 2px}
+.ba-btn.alt{background:#e97824}.ba-btn.sm{padding:7px 12px;font-size:13px}
+#ba-top{background:#fff;border-bottom:1px solid #e5e9f0;padding:10px 6%;display:flex;gap:8px;align-items:center;position:relative;z-index:20}
+#ba-who{font-size:12px;color:#667085;white-space:nowrap}
+#ba-res{display:none;position:absolute;left:6%;right:6%;top:100%;background:#fff;color:#202b3c;border:1px solid #e5e9f0;border-radius:0 0 12px 12px;box-shadow:0 12px 30px #0002;padding:8px;max-height:70vh;overflow:auto}
+.ba-hit{display:block;width:100%;text-align:left;background:none;border:0;border-bottom:1px solid #eef0f4;padding:10px;cursor:pointer;color:inherit;font:inherit}
+.ba-hit:hover{background:#fff4ea}.ba-hit small{display:block;color:#667085;font-size:12px;line-height:1.5}
+.ba-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px;margin-top:12px}
+.ba-card{border:1px solid #e5e9f0;border-radius:12px;padding:10px;background:#fafbfc;font-size:14px}
+.ba-card img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:8px;background:#e5e9f0;margin-bottom:6px}
+#ba-player{margin-bottom:16px}#ba-player img{max-width:100%;border-radius:10px}
+#ba-set{position:fixed;top:0;right:0;bottom:0;width:min(340px,92vw);background:#fff;color:#202b3c;z-index:90;padding:18px;overflow:auto;box-shadow:-8px 0 30px #0003;transform:translateX(105%);transition:transform .25s}
+#ba-set.open{transform:none}#ba-set h4{margin:18px 0 6px}#ba-set label{display:block;margin:8px 0}
+#ba-toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#14243d;color:#fff;padding:10px 18px;border-radius:30px;z-index:120;display:none}
+html[data-theme=dark]{--bg:#0f1624;--card:#182236;--text:#e6ebf5;--muted:#9aa7bd;--line:#2a3750}
+html[data-theme=dark] :is(.article-area,.state,.quiz-box,#bharat-resource,.br-card,.ba-box,.ba-card,#ba-top,#ba-res,#ba-set){background:#182236!important;color:#e6ebf5!important;border-color:#2a3750!important}
+html[data-theme=dark] :is(.article-area p,.article-area li,.ba-hit small,.br-card p){color:#c3cde0!important}
+html[data-theme=dark] :is(.quiz-option,.ba-in,.br-input,.br-select,.search-wrap input){background:#223049!important;color:#e6ebf5!important;border-color:#2a3750!important}
+html[data-theme=dark] :is(.info-box){background:#16302a!important}
+html[data-theme=dark] :is(.article-banner){background:#1d2a40!important}
+html[data-theme=dark] .ba-hit:hover{background:#223049}
+html[data-reduce] *{transition:none!important;animation:none!important;scroll-behavior:auto!important}
+</style>
+<script>
+(function(){
+const $=(s,r=document)=>r.querySelector(s),esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+/* ---------- स्टोरेज: सिर्फ़ इसी फ़ोन/ब्राउज़र में (localStorage) ---------- */
+const S={get(k,d){try{const v=localStorage.getItem('kab_'+k);return v===null?d:JSON.parse(v)}catch(e){return d}},
+set(k,v){try{localStorage.setItem('kab_'+k,JSON.stringify(v));return true}catch(e){toast('फ़ोन की स्टोरेज भर गई है');return false}}};
+function toast(t){const e=$('#ba-toast');e.textContent=t;e.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>e.style.display='none',2200)}
+function save(name,text,type){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type:(type||'text/plain')+';charset=utf-8'}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+async function saveUrl(url,name){try{const b=await (await fetch(url)).blob();const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name;a.click()}catch(e){window.open(url,'_blank','noopener')}}
+const go=id=>{const e=document.getElementById(id);if(e){e.style.display='';e.scrollIntoView({behavior:'smooth'})}};
+document.body.insertAdjacentHTML('beforeend','<div id="ba-toast"></div>');
+
+/* ---------- शीर्ष खोज बार (बिना AI) ---------- */
+const top=document.createElement('div');top.id='ba-top';
+top.innerHTML='<input id="ba-q" class="ba-in" style="margin:0;flex:1;min-width:0" type="search" placeholder="🔎 भारत, राजस्थान, संविधान, Gandhi… खोजें"><span id="ba-who"></span><button class="ba-btn sm" id="ba-gear" title="सेटिंग">⚙️</button><div id="ba-res"></div>';
+document.body.prepend(top);
+const SYN={india:'भारत',bharat:'भारत',rajasthan:'राजस्थान',history:'इतिहास',culture:'संस्कृति',constitution:'संविधान',science:'विज्ञान',geography:'भूगोल',economy:'अर्थव्यवस्था',heritage:'विरासत',gandhi:'गांधी',ambedkar:'आंबेडकर',isro:'इसरो',freedom:'स्वतंत्रता',river:'नदी',rivers:'नदियाँ',state:'राज्य',states:'राज्य',quiz:'क्विज़',delhi:'दिल्ली',bihar:'बिहार',kerala:'केरल',gujarat:'गुजरात',punjab:'पंजाब',bengal:'बंगाल'};
+const norm=s=>String(s).toLowerCase().replace(/[ंँ़\u200d\u200c]/g,'');
+let IDX=null;
+function build(){IDX=[];const add=(type,title,txt,act)=>IDX.push({type,title,txt,act,nt:norm(title),nx:norm(title+' '+txt)});
+ if(typeof articles!=='undefined')for(const k in articles){const a=articles[k];add('📚 लेख',a.title,a.html.replace(/<[^>]+>/g,' ').replace(/\s+/g,' '),()=>openArticle(k))}
+ if(typeof states!=='undefined')states.forEach(s=>add('🗺️ राज्य',s[0],'राजधानी: '+s[1],()=>go('states')));
+ if(typeof uts!=='undefined')uts.forEach(s=>add('🗺️ केंद्रशासित प्रदेश',s[0],'राजधानी: '+s[1],()=>go('states')));
+ document.querySelectorAll('.timeline-item').forEach(e=>add('⏳ समयरेखा',e.querySelector('strong').textContent,e.querySelector('p').textContent,()=>go('timeline')))}
+function find(q){if(!IDX)build();
+ const toks=[...new Set(norm(q).split(/[^\p{L}\p{M}\p{N}]+/u).filter(Boolean).flatMap(t=>SYN[t]?[t,norm(SYN[t])]:[t]))];
+ return toks.length?IDX.map(d=>{let s=0;toks.forEach(t=>{if(d.nt.includes(t))s+=10;let i=0,c=0;while(c<5&&(i=d.nx.indexOf(t,i))>-1){c++;i+=t.length}s+=c;if(t.length>3&&d.nt.includes(t.slice(0,-1)))s+=2});return{d,s}}).filter(x=>x.s>0).sort((a,b)=>b.s-a.s).slice(0,6).map(x=>({...x.d,toks})):[]}
+function snip(d){const ss=d.txt.split(/[।.]/);return (ss.find(s=>d.toks.some(t=>norm(s).includes(t)))||ss[0]).trim().slice(0,110)}
+const R=$('#ba-res');
+$('#ba-q').addEventListener('input',e=>{const q=e.target.value.trim(),h=q?find(q):[];
+ if(!q){R.style.display='none';return}
+ R.style.display='block';R.innerHTML='<b style="padding:6px;display:block">⭐ सबसे प्रासंगिक नतीजे</b>';
+ if(!h.length){R.insertAdjacentHTML('beforeend','<p style="padding:10px">कुछ नहीं मिला। दूसरा शब्द आज़माएँ या नीचे Resource Finder में खोजें।</p>');return}
+ h.forEach(d=>{const b=document.createElement('button');b.className='ba-hit';b.innerHTML=esc(d.type)+' — <b>'+esc(d.title)+'</b><small>'+esc(snip(d))+'</small>';b.onclick=()=>{R.style.display='none';d.act()};R.appendChild(b)})});
+$('#ba-q').addEventListener('keydown',e=>{if(e.key==='Enter'&&typeof searchTopics==='function'){$('#searchInput').value=e.target.value;searchTopics();go('topics')}if(e.key==='Escape')R.style.display='none'});
+document.addEventListener('click',e=>{if(!top.contains(e.target))R.style.display='none'});
+
+/* ---------- सेव किया हुआ ---------- */
+const getSaved=()=>S.get('saved',[]);
+function addSaved(it){const l=getSaved().filter(x=>x.id!==it.id);l.unshift(it);if(S.set('saved',l)){renderSaved();toast('💾 आपके फ़ोन में सेव हो गया')}}
+const saved=document.createElement('section');saved.className='section';saved.id='ba-saved';
+saved.innerHTML='<div class="section-heading"><h2>💾 मेरा सेव किया हुआ</h2><p>यह सब सिर्फ़ आपके इस फ़ोन/ब्राउज़र में रखा है। कोई सर्वर नहीं।</p></div><div class="card"><div id="sv-list"></div><div id="ba-view" style="white-space:pre-wrap;margin-top:14px"></div></div>';
+function renderSaved(){const l=getSaved(),box=$('#sv-list');box.innerHTML=l.length?'':'<p style="color:#667085">अभी कुछ सेव नहीं है। किसी लेख, वीडियो या तस्वीर पर 💾 दबाएँ।</p>';
+ l.forEach((it,i)=>{const row=document.createElement('div');row.style.cssText='display:flex;gap:6px;align-items:center;flex-wrap:wrap;padding:8px 0;border-bottom:1px solid #e5e9f0';
+  row.innerHTML='<span style="flex:1;min-width:160px">'+esc(it.type)+' — <b>'+esc(it.title)+'</b></span>';
+  const mk=(t,f)=>{const b=document.createElement('button');b.className='ba-btn sm';b.textContent=t;b.onclick=f;row.appendChild(b)};
+  mk('खोलें',()=>{if(it.text){$('#ba-view').textContent=it.title+'\n\n'+it.text;$('#ba-view').scrollIntoView({behavior:'smooth'})}else if(it.embed)show(frame(it.embed),it.title,it);else if(it.img)show('<img src="'+esc(it.img)+'" alt="">',it.title,it)});
+  if(it.text)mk('⬇️',()=>save(it.title+'.txt',it.title+'\n\n'+it.text));else if(it.img)mk('⬇️',()=>saveUrl(it.img,it.title.replace(/[^\w\u0900-\u097F]+/g,'_')+'.jpg'));else if(it.link)mk('⬇️ फ़ाइलें',()=>window.open(it.link,'_blank','noopener'));
+  mk('🗑️',()=>{S.set('saved',getSaved().filter(x=>x.id!==it.id));renderSaved()});box.appendChild(row)})}
+
+/* ---------- लेख: सेव + डाउनलोड बटन ---------- */
+let cur=null;const _oa=window.openArticle;
+window.openArticle=function(k){_oa(k);cur=k;const box=$('.article-actions');
+ if(box&&!box.dataset.ba){box.dataset.ba=1;
+  const b1=document.createElement('button');b1.className='btn btn-light';b1.textContent='💾 सेव करें';
+  b1.onclick=()=>addSaved({id:'a-'+cur,type:'लेख',key:cur,title:articles[cur].title,text:$('#articleContent').innerText});
+  const b2=document.createElement('button');b2.className='btn btn-light';b2.textContent='⬇️ डाउनलोड (.txt)';
+  b2.onclick=()=>save(articles[cur].title+'.txt',articles[cur].title+'\n\n'+$('#articleContent').innerText);
+  box.append(b1,b2)}};
+
+/* ---------- मीडिया केंद्र: वीडियो / किताबें / तस्वीरें ---------- */
+/* यहाँ अपने पसंदीदा YouTube वीडियो जोड़ें: {t:'नाम', id:'11-अक्षर की वीडियो ID'} */
+const MY_VIDEOS=[ /* {t:'वीडियो का नाम', id:'xxxxxxxxxxx'}, */ ];
+const media=document.createElement('section');media.className='section';media.id='ba-media';
+media.innerHTML='<div class="section-heading"><h2>🎬 मीडिया केंद्र</h2><p>वीडियो, किताबें और तस्वीरें — यहीं देखें, सेव करें और डाउनलोड करें।</p></div><div class="card"><div id="ba-player" style="display:none"></div>'+
+'<h3>▶️ YouTube वीडियो चलाएँ</h3><div style="display:flex;gap:8px"><input id="yt-in" class="ba-in" style="margin:0" placeholder="YouTube वीडियो/प्लेलिस्ट का लिंक चिपकाएँ"><button class="ba-btn" id="yt-go">चलाएँ</button></div><div id="yt-list"></div>'+
+'<h3 style="margin-top:22px">📚 किताबें, वीडियो, ऑडियो (Internet Archive)</h3><div style="display:flex;gap:8px;flex-wrap:wrap"><input id="ia-in" class="ba-in" style="margin:0;flex:1;min-width:150px" placeholder="जैसे: Indian history (अंग्रेज़ी में बेहतर)"><select id="ia-t" class="ba-in" style="margin:0;width:auto"><option value="texts">किताबें</option><option value="movies">वीडियो</option><option value="audio">ऑडियो</option></select><button class="ba-btn" id="ia-go">खोजें</button></div><div id="ia-out" class="ba-grid"></div>'+
+'<h3 style="margin-top:22px">🖼️ तस्वीरें और नक्शे (Wikimedia Commons)</h3><div style="display:flex;gap:8px"><input id="wm-in" class="ba-in" style="margin:0" placeholder="जैसे: Taj Mahal, Konark"><button class="ba-btn" id="wm-go">खोजें</button></div><div id="wm-out" class="ba-grid"></div></div>';
+const src=document.getElementById('sources');
+if(src){src.before(media,saved)}else{(document.querySelector('main')||document.body).append(media,saved)}
+const frame=u=>'<iframe src="'+esc(u)+'" style="width:100%;aspect-ratio:16/9;border:0;border-radius:10px" allowfullscreen loading="lazy" allow="autoplay;encrypted-media;picture-in-picture;fullscreen"></iframe>';
+function show(html,title,item){const p=$('#ba-player');p.style.display='block';
+ p.innerHTML=html+'<div style="margin:8px 0"><button class="ba-btn sm" id="ba-ps">💾 सेव करें</button><button class="ba-btn sm alt" id="ba-pc">✕ बंद करें</button></div>';
+ $('#ba-ps').onclick=()=>addSaved(item);$('#ba-pc').onclick=()=>{p.style.display='none';p.innerHTML=''};p.scrollIntoView({behavior:'smooth',block:'center'})}
+function card(o){const d=document.createElement('div');d.className='ba-card';d.innerHTML=(o.img?'<img loading="lazy" src="'+esc(o.img)+'" alt="">':'')+'<b>'+esc(o.title)+'</b><br>';
+ o.btns.forEach(([t,f])=>{const b=document.createElement('button');b.className='ba-btn sm';b.textContent=t;b.onclick=f;d.appendChild(b)});return d}
+function yt(u){const l=u.match(/[?&]list=([\w-]+)/),v=u.match(/(?:youtu\.be\/|v=|embed\/|shorts\/)([\w-]{11})/)||(/^[\w-]{11}$/.test(u.trim())?[0,u.trim()]:null);
+ const e=v?'https://www.youtube-nocookie.com/embed/'+v[1]:l?'https://www.youtube-nocookie.com/embed/videoseries?list='+l[1]:null;
+ if(!e){toast('यह YouTube लिंक सही नहीं लगता');return}
+ playYT(e,'YouTube वीडियो '+(v?v[1]:l[1]))}
+function playYT(e,t){show(frame(e),t,{id:'v-'+e,type:'वीडियो',title:t,embed:e})}
+$('#yt-go').onclick=()=>yt($('#yt-in').value);
+$('#yt-in').addEventListener('keydown',e=>{if(e.key==='Enter')yt(e.target.value)});
+MY_VIDEOS.forEach(v=>{const b=document.createElement('button');b.className='ba-btn sm alt';b.textContent='▶️ '+v.t;b.onclick=()=>playYT('https://www.youtube-nocookie.com/embed/'+v.id,v.t);$('#yt-list').appendChild(b)});
+async function iaSearch(){const q=$('#ia-in').value.trim(),t=$('#ia-t').value,o=$('#ia-out');if(!q)return;o.textContent='खोज रहे हैं…';
+ try{const r=await (await fetch('https://archive.org/advancedsearch.php?q='+encodeURIComponent('('+q+') AND mediatype:'+t)+'&fl[]=identifier&fl[]=title&rows=12&output=json')).json();
+  const docs=r.response.docs;o.textContent=docs.length?'':'कुछ नहीं मिला।';
+  docs.forEach(d=>{const title=Array.isArray(d.title)?d.title[0]:d.title||d.identifier,emb='https://archive.org/embed/'+d.identifier,lnk='https://archive.org/download/'+d.identifier;
+   o.appendChild(card({img:'https://archive.org/services/img/'+d.identifier,title,btns:[['▶️ देखें',()=>show(frame(emb),title,{id:'ia-'+d.identifier,type:'Archive',title,embed:emb,link:lnk})],['💾',()=>addSaved({id:'ia-'+d.identifier,type:'Archive',title,embed:emb,link:lnk})],['⬇️',()=>window.open(lnk,'_blank','noopener')]]}))})
+ }catch(e){o.textContent='इंटरनेट या सर्वर की समस्या। थोड़ी देर बाद फिर कोशिश करें।'}}
+$('#ia-go').onclick=iaSearch;$('#ia-in').addEventListener('keydown',e=>{if(e.key==='Enter')iaSearch()});
+async function wmSearch(){const q=$('#wm-in').value.trim(),o=$('#wm-out');if(!q)return;o.textContent='खोज रहे हैं…';
+ try{const r=await (await fetch('https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrnamespace=6&gsrlimit=12&prop=imageinfo&iiprop=url&iiurlwidth=500&format=json&origin=*&gsrsearch='+encodeURIComponent(q))).json();
+  const pg=Object.values((r.query||{}).pages||{});o.textContent=pg.length?'':'कुछ नहीं मिला।';
+  pg.forEach(p=>{const ii=p.imageinfo&&p.imageinfo[0];if(!ii)return;const title=p.title.replace(/^File:/,'').replace(/\.\w+$/,''),it={id:'wm-'+p.pageid,type:'तस्वीर',title,img:ii.thumburl||ii.url};
+   o.appendChild(card({img:ii.thumburl,title,btns:[['👁️ देखें',()=>show('<img src="'+esc(ii.thumburl||ii.url)+'" alt="">',title,it)],['💾',()=>addSaved(it)],['⬇️',()=>saveUrl(ii.url,title.replace(/[^\w\u0900-\u097F]+/g,'_')+'.jpg')]]}))})
+ }catch(e){o.textContent='इंटरनेट या सर्वर की समस्या। थोड़ी देर बाद फिर कोशिश करें।'}}
+$('#wm-go').onclick=wmSearch;$('#wm-in').addEventListener('keydown',e=>{if(e.key==='Enter')wmSearch()});
+
+/* ---------- सेटिंग पैनल ---------- */
+const SEC=[['topics','ज्ञान केंद्र'],['timeline','समयरेखा'],['states','राज्य'],['quiz','क्विज़'],['ba-media','मीडिया केंद्र'],['ba-saved','मेरा सेव किया हुआ'],['sources','स्रोत'],['bharat-resource','Resource Finder'],['about','हमारे बारे में']];
+let cfg=Object.assign({theme:'system',zoom:100,reduce:false,kids:false,hide:[]},S.get('cfg',{}));
+function apply(){const dark=cfg.theme==='dark'||(cfg.theme==='system'&&matchMedia('(prefers-color-scheme:dark)').matches);
+ document.documentElement.dataset.theme=dark?'dark':'light';document.documentElement.toggleAttribute('data-reduce',cfg.reduce);
+ document.body.style.zoom=(cfg.zoom/100)*(cfg.kids?1.2:1);
+ SEC.forEach(([id])=>{const e=document.getElementById(id);if(e)e.style.display=cfg.hide.includes(id)?'none':''})}
+const pan=document.createElement('aside');pan.id='ba-set';
+pan.innerHTML='<h3>⚙️ सेटिंग <button class="ba-btn sm alt" id="s-x" style="float:right">✕</button></h3>'+
+'<label>थीम<select id="s-theme" class="ba-in"><option value="system">फ़ोन के अनुसार</option><option value="light">हल्का</option><option value="dark">गहरा</option></select></label>'+
+'<label>पेज का आकार: <b id="s-zv"></b><input type="range" id="s-zoom" min="90" max="150" step="10" style="width:100%"></label>'+
+'<label><input type="checkbox" id="s-kids"> 🧒 बच्चों का मोड (बड़ा आकार)</label><label><input type="checkbox" id="s-red"> एनिमेशन कम करें</label>'+
+'<h4>सेक्शन दिखाएँ</h4>'+SEC.map(([id,n])=>'<label><input type="checkbox" data-sec="'+id+'"> '+n+'</label>').join('')+
+'<h4>मेरा डेटा (सिर्फ़ इस फ़ोन में)</h4><button class="ba-btn sm" id="s-exp">⬇️ बैकअप डाउनलोड</button><button class="ba-btn sm" id="s-imp">⬆️ बैकअप लोड</button><input type="file" id="s-file" accept=".json" hidden><button class="ba-btn sm alt" id="s-clr">🗑️ सारा डेटा मिटाएँ</button>'+
+'<p style="font-size:12px;color:#667085;margin-top:10px">ब्राउज़र का डेटा साफ़ करने पर सेव किया हुआ मिट जाएगा, इसलिए बैकअप रखें।</p>';
+document.body.appendChild(pan);
+function sync(){$('#s-theme').value=cfg.theme;$('#s-zoom').value=cfg.zoom;$('#s-zv').textContent=cfg.zoom+'%';$('#s-kids').checked=cfg.kids;$('#s-red').checked=cfg.reduce;
+ pan.querySelectorAll('[data-sec]').forEach(c=>c.checked=!cfg.hide.includes(c.dataset.sec))}
+pan.addEventListener('change',e=>{const t=e.target;
+ if(t.id==='s-theme')cfg.theme=t.value;else if(t.id==='s-zoom')cfg.zoom=+t.value;else if(t.id==='s-kids')cfg.kids=t.checked;else if(t.id==='s-red')cfg.reduce=t.checked;
+ else if(t.dataset.sec){cfg.hide=cfg.hide.filter(x=>x!==t.dataset.sec);if(!t.checked)cfg.hide.push(t.dataset.sec)}
+ else if(t.id==='s-file'&&t.files[0]){t.files[0].text().then(x=>{try{const o=JSON.parse(x);Object.keys(o).filter(k=>k.startsWith('kab_')).forEach(k=>localStorage.setItem(k,o[k]));location.reload()}catch(e){toast('यह बैकअप फ़ाइल सही नहीं है')}});return}
+ S.set('cfg',cfg);apply();sync()});
+pan.addEventListener('click',e=>{const id=e.target.id;
+ if(id==='s-x')pan.classList.remove('open');
+ if(id==='s-imp')$('#s-file').click();
+ if(id==='s-exp'){const o={};Object.keys(localStorage).filter(k=>k.startsWith('kab_')).forEach(k=>o[k]=localStorage.getItem(k));save('bharat-backup.json',JSON.stringify(o),'application/json')}
+ if(id==='s-clr'&&confirm('सेव किया हुआ सारा डेटा और सेटिंग मिट जाएगी। पक्का?')){Object.keys(localStorage).filter(k=>k.startsWith('kab_')).forEach(k=>localStorage.removeItem(k));location.reload()}});
+$('#ba-gear').onclick=()=>pan.classList.toggle('open');
+
+/* ---------- Anonymous प्रवेश ---------- */
+function who(){const u=S.get('user');if(u)$('#ba-who').textContent='🕶️ '+(u.nick||u.id)}
+function gate(){if(S.get('user')){who();return}
+ const g=document.createElement('div');g.id='ba-gate';
+ g.innerHTML='<div class="ba-box"><div style="font-size:40px">🇮🇳</div><h2>स्वागत है</h2><p style="color:#667085;font-size:14px;margin-top:6px">कोई अकाउंट या पासवर्ड नहीं चाहिए। आपका सेव किया हुआ सारा डेटा सिर्फ़ आपके इस फ़ोन में रहेगा।</p><input id="ba-nick" class="ba-in" placeholder="उपनाम (वैकल्पिक)" maxlength="20"><button class="ba-btn" id="ba-anon">🕶️ Anonymous रहकर जारी रखें</button></div>';
+ document.body.appendChild(g);
+ $('#ba-anon').onclick=()=>{S.set('user',{id:'anon-'+Math.random().toString(36).slice(2,8),nick:$('#ba-nick').value.trim()});g.remove();who()}}
+
+renderSaved();sync();apply();gate();
+})();
+</script>
+<!-- ═══ BHARAT ADD-ON v1 END ═══ -->
 
 </body>
 </html>
