@@ -1,0 +1,280 @@
+/* ==========================================================================
+   FILE: themes.css
+   DESCRIPTION: Advanced Multi-Theme Engine, Glassmorphism & Interactive UI
+   ========================================================================== */
+
+:root {
+  --transition-speed: 0.35s;
+  --radius-lg: 18px;
+  --radius-md: 12px;
+  --shadow-soft: 0 10px 30px rgba(20, 36, 61, 0.08);
+  --shadow-hover: 0 16px 38px rgba(20, 36, 61, 0.16);
+}
+
+/* 1. तिरंगा क्लासिक (Default Tiranga Theme) */
+html[data-bharat-theme="tiranga"] {
+  --saffron: #e97824;
+  --green: #16834a;
+  --navy: #14243d;
+  --bg: #f5f7fb;
+  --card: #ffffff;
+  --text: #202b3c;
+  --muted: #5a6577;
+  --line: #e2e8f0;
+  --hero-grad: linear-gradient(120deg, #ff9933 0%, #ffffff 50%, #138808 100%);
+  --accent-soft: #fff3e6;
+}
+
+/* 2. इसरो अंतरिक्ष थीम (ISRO Space Dark Theme) */
+html[data-bharat-theme="isro"] {
+  --saffron: #38bdf8;
+  --green: #34d399;
+  --navy: #090d16;
+  --bg: #0b1120;
+  --card: #131c31;
+  --text: #f1f5f9;
+  --muted: #94a3b8;
+  --line: #1e293b;
+  --hero-grad: linear-gradient(135deg, #090d16 0%, #1e3a8a 50%, #0f172a 100%);
+  --accent-soft: #1e293b;
+}
+
+/* 3. शाही विरासत थीम (Royal Heritage Gold Theme) */
+html[data-bharat-theme="heritage"] {
+  --saffron: #b45309;
+  --green: #047857;
+  --navy: #451a03;
+  --bg: #fefce8;
+  --card: #fffbeb;
+  --text: #451a03;
+  --muted: #78350f;
+  --line: #fde68a;
+  --hero-grad: linear-gradient(120deg, #f59e0b 0%, #fef3c7 50%, #d97706 100%);
+  --accent-soft: #fef3c7;
+}
+
+/* 4. प्राचीन पांडुलिपि थीम (Ancient Manuscript / Sepia Theme) */
+html[data-bharat-theme="manuscript"] {
+  --saffron: #854d0e;
+  --green: #3f6212;
+  --navy: #3b2f2f;
+  --bg: #f4ecd8;
+  --card: #faf5e8;
+  --text: #2c221e;
+  --muted: #5c4b43;
+  --line: #dfd3b8;
+  --hero-grad: linear-gradient(120deg, #d6c5a3 0%, #f4ecd8 50%, #c2ae85 100%);
+  --accent-soft: #ebe0c5;
+}
+
+/* 5. हरित भारत थीम (Prakriti Eco-Green Theme) */
+html[data-bharat-theme="prakriti"] {
+  --saffron: #059669;
+  --green: #047857;
+  --navy: #064e3b;
+  --bg: #ecfdf5;
+  --card: #ffffff;
+  --text: #064e3b;
+  --muted: #374151;
+  --line: #a7f3d0;
+  --hero-grad: linear-gradient(120deg, #10b981 0%, #ecfdf5 50%, #059669 100%);
+  --accent-soft: #d1fae5;
+}
+
+/* Apply Variables Globally */
+body {
+  background: var(--bg) !important;
+  color: var(--text) !important;
+  transition: background var(--transition-speed), color var(--transition-speed);
+}
+
+.hero {
+  background: var(--hero-grad) !important;
+  color: var(--text) !important;
+  position: relative;
+  overflow: hidden;
+}
+
+html[data-bharat-theme="isro"] .hero {
+  color: #ffffff !important;
+}
+
+.card, .article-area, .quiz-box, .state, #bharat-resource {
+  background: var(--card) !important;
+  color: var(--text) !important;
+  border-color: var(--line) !important;
+  box-shadow: var(--shadow-soft) !important;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, background var(--transition-speed);
+}
+
+.card:hover {
+  box-shadow: var(--shadow-hover) !important;
+}
+
+/* Theme Switcher Floating Dock / Bar */
+#kb-theme-bar {
+  background: var(--card);
+  border-bottom: 1px solid var(--line);
+  padding: 10px 6%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.kb-theme-pills {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.kb-theme-btn {
+  border: 1px solid var(--line);
+  background: var(--bg);
+  color: var(--text);
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.kb-theme-btn.active, .kb-theme-btn:hover {
+  background: var(--saffron);
+  color: #ffffff;
+  border-color: var(--saffron);
+  transform: translateY(-1px);
+}
+
+/* Category Filter Pills */
+.kb-filter-bar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.kb-filter-btn {
+  padding: 8px 16px;
+  border-radius: 25px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.kb-filter-btn.active, .kb-filter-btn:hover {
+  background: var(--navy);
+  color: #ffffff;
+  border-color: var(--navy);
+}
+
+/* Daily Fact Widget */
+#kb-daily-fact {
+  background: var(--accent-soft);
+  border-left: 5px solid var(--saffron);
+  border-radius: var(--radius-md);
+  padding: 18px 22px;
+  margin: 22px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+/* State Modal Popup */
+#kb-state-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(9, 13, 22, 0.72);
+  backdrop-filter: blur(5px);
+  z-index: 200;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+#kb-state-modal.open {
+  display: flex;
+}
+
+.kb-modal-card {
+  background: var(--card);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  max-width: 540px;
+  width: 100%;
+  padding: 28px;
+  box-shadow: 0 25px 50px rgba(0,0,0,0.35);
+  animation: kbPopIn 0.25s ease-out;
+}
+
+@keyframes kbPopIn {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.kb-modal-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.kb-stat-box {
+  background: var(--bg);
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+}
+
+.kb-stat-box small {
+  color: var(--muted);
+  display: block;
+  font-size: 11px;
+}
+
+.kb-stat-box strong {
+  font-size: 14px;
+  color: var(--saffron);
+}
+
+/* Audio Reader Bar */
+.kb-audio-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--accent-soft);
+  padding: 10px 15px;
+  border-radius: 10px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.state {
+  cursor: pointer;
+  position: relative;
+}
+
+.state:hover {
+  border-color: var(--saffron) !important;
+  transform: translateY(-2px);
+}
+
+.state::after {
+  content: "विवरण देखें →";
+  display: block;
+  font-size: 11px;
+  color: var(--saffron);
+  margin-top: 4px;
+  font-weight: bold;
+}
