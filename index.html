@@ -724,4 +724,57 @@ function nextQuestion() {
 showQuestion();
 </script>
 </body>
+<section style="max-width:850px;margin:40px auto;padding:20px;background:white;border-radius:15px">
+  <h2>🇮🇳 Know About Bharat – Research Search</h2>
+  <p>भारत से संबंधित जानकारी इंटरनेट पर खोजें।</p>
+
+  <input id="bharatSearch"
+    placeholder="अपना प्रश्न लिखें..."
+    style="width:100%;padding:14px;border:1px solid #ccc;border-radius:8px">
+
+  <button onclick="searchBharat()"
+    style="padding:12px 20px;margin-top:12px;background:#14243d;color:white;border:0;border-radius:8px">
+    🔎 जानकारी खोजें
+  </button>
+
+  <div id="bharatResults" style="margin-top:20px;line-height:2"></div>
+</section>
+
+<script>
+function searchBharat() {
+  const q = document.getElementById("bharatSearch").value.trim();
+
+  if (!q) {
+    alert("पहले अपना प्रश्न लिखें");
+    return;
+  }
+
+  const box = document.getElementById("bharatResults");
+  box.innerHTML = "";
+
+  const heading = document.createElement("h3");
+  heading.textContent = "आपके प्रश्न के खोज परिणाम:";
+  box.appendChild(heading);
+
+  const searches = [
+    ["Google पर खोजें", "https://www.google.com/search?q=" + encodeURIComponent(q)],
+    ["सरकारी वेबसाइटों पर खोजें", "https://www.google.com/search?q=" + encodeURIComponent(q + " site:gov.in")],
+    ["शोध और शिक्षा स्रोत", "https://www.google.com/search?q=" + encodeURIComponent(q + " research education India")],
+    ["भारत सरकार का डेटा", "https://www.google.com/search?q=" + encodeURIComponent(q + " site:data.gov.in")]
+  ];
+
+  searches.forEach(item => {
+    const a = document.createElement("a");
+    a.href = item[1];
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
+    a.textContent = "🔗 " + item[0];
+    a.style.display = "block";
+    a.style.margin = "12px 0";
+    a.style.color = "#1764a0";
+    box.appendChild(a);
+  });
+}
+</script>
+
 </html>
