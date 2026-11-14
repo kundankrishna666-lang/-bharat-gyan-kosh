@@ -723,58 +723,373 @@ function nextQuestion() {
 }
 showQuestion();
 </script>
-</body>
-<section style="max-width:850px;margin:40px auto;padding:20px;background:white;border-radius:15px">
-  <h2>🇮🇳 Know About Bharat – Research Search</h2>
-  <p>भारत से संबंधित जानकारी इंटरनेट पर खोजें।</p>
+<!-- BHARAT RESOURCE FINDER START -->
 
-  <input id="bharatSearch"
-    placeholder="अपना प्रश्न लिखें..."
-    style="width:100%;padding:14px;border:1px solid #ccc;border-radius:8px">
+<style>
+#bharat-resource {
+  max-width:1100px;
+  margin:45px auto;
+  padding:25px;
+  background:#fff;
+  border-radius:16px;
+  box-shadow:0 5px 25px #00000010;
+  color:#202b3c;
+  font-family:Arial,sans-serif;
+}
+#bharat-resource h2 {
+  font-size:26px;
+  margin-bottom:8px;
+}
+#bharat-resource .br-subtitle {
+  color:#667085;
+  line-height:1.7;
+  margin-bottom:20px;
+}
+#bharat-resource .br-input {
+  width:100%;
+  padding:15px;
+  border:1px solid #d8dee8;
+  border-radius:9px;
+  font-size:16px;
+  margin:10px 0;
+}
+#bharat-resource .br-select {
+  width:100%;
+  padding:13px;
+  border:1px solid #d8dee8;
+  border-radius:9px;
+  margin:8px 0 15px;
+  background:white;
+  font-size:15px;
+}
+#bharat-resource .br-button {
+  padding:13px 22px;
+  background:#14243d;
+  color:white;
+  border:0;
+  border-radius:9px;
+  cursor:pointer;
+  font-weight:bold;
+}
+#bharat-resource .br-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:14px;
+  margin-top:22px;
+}
+#bharat-resource .br-card {
+  border:1px solid #e5e9f0;
+  border-radius:12px;
+  padding:17px;
+  background:#fafbfc;
+}
+#bharat-resource .br-card h3 {
+  font-size:17px;
+  margin-bottom:8px;
+}
+#bharat-resource .br-card p {
+  color:#667085;
+  font-size:13px;
+  line-height:1.6;
+  min-height:40px;
+}
+#bharat-resource .br-link {
+  display:inline-block;
+  margin-top:12px;
+  color:#1764a0;
+  font-weight:bold;
+  text-decoration:none;
+}
+#bharat-resource .br-link:hover {
+  text-decoration:underline;
+}
+#bharat-resource .br-note {
+  background:#eef7f1;
+  padding:14px;
+  border-radius:9px;
+  margin-top:20px;
+  font-size:13px;
+  line-height:1.7;
+}
+</style>
 
-  <button onclick="searchBharat()"
-    style="padding:12px 20px;margin-top:12px;background:#14243d;color:white;border:0;border-radius:8px">
-    🔎 जानकारी खोजें
+<section id="bharat-resource">
+
+  <h2>🔎 Bharat Resource Finder</h2>
+
+  <p class="br-subtitle">
+    किसी भी विषय से संबंधित वीडियो, पांडुलिपियाँ,
+    पुस्तकें, शोध पत्र, ऐतिहासिक दस्तावेज और
+    सरकारी जानकारी एक ही जगह खोजें।
+  </p>
+
+  <input
+    id="br-query"
+    class="br-input"
+    type="search"
+    placeholder="उदाहरण: मोहनजोदड़ो, आर्यभट, भारतीय संविधान..."
+  >
+
+  <label for="br-type"><b>आपको किस प्रकार की जानकारी चाहिए?</b></label>
+
+  <select id="br-type" class="br-select">
+    <option value="all">सभी प्रकार के संसाधन</option>
+    <option value="video">YouTube वीडियो और व्याख्यान</option>
+    <option value="manuscript">पांडुलिपियाँ और ऐतिहासिक अभिलेख</option>
+    <option value="books">किताबें और डिजिटल पुस्तकालय</option>
+    <option value="research">शोध पत्र और थीसिस</option>
+    <option value="images">तस्वीरें, नक्शे और संग्रहालय</option>
+    <option value="government">सरकारी रिपोर्ट और आँकड़े</option>
+  </select>
+
+  <button class="br-button" onclick="brSearch()">
+    🔍 संसाधन खोजें
   </button>
 
-  <div id="bharatResults" style="margin-top:20px;line-height:2"></div>
+  <div id="br-results" aria-live="polite"></div>
+
+  <div class="br-note">
+    <b>महत्वपूर्ण:</b> ये लिंक अलग-अलग सार्वजनिक
+    पुस्तकालयों, शोध संस्थानों और वेबसाइटों पर
+    उपलब्ध संसाधनों की खोज खोलते हैं। कुछ सामग्री
+    मुफ्त हो सकती है और कुछ के लिए विशेष अनुमति
+    या संस्थागत सदस्यता जरूरी हो सकती है।
+  </div>
+
 </section>
 
 <script>
-function searchBharat() {
-  const q = document.getElementById("bharatSearch").value.trim();
+(function () {
 
-  if (!q) {
-    alert("पहले अपना प्रश्न लिखें");
-    return;
-  }
+  const root = document.getElementById("bharat-resource");
 
-  const box = document.getElementById("bharatResults");
-  box.innerHTML = "";
+  if (!root) return;
 
-  const heading = document.createElement("h3");
-  heading.textContent = "आपके प्रश्न के खोज परिणाम:";
-  box.appendChild(heading);
+  const searchURL = (base, query) =>
+    base + encodeURIComponent(query);
 
-  const searches = [
-    ["Google पर खोजें", "https://www.google.com/search?q=" + encodeURIComponent(q)],
-    ["सरकारी वेबसाइटों पर खोजें", "https://www.google.com/search?q=" + encodeURIComponent(q + " site:gov.in")],
-    ["शोध और शिक्षा स्रोत", "https://www.google.com/search?q=" + encodeURIComponent(q + " research education India")],
-    ["भारत सरकार का डेटा", "https://www.google.com/search?q=" + encodeURIComponent(q + " site:data.gov.in")]
+  const resources = [
+    {
+      type:"video",
+      icon:"🎥",
+      title:"YouTube शैक्षिक वीडियो",
+      description:"व्याख्यान, डॉक्यूमेंट्री और विषय आधारित वीडियो।",
+      url:q => searchURL(
+        "https://www.youtube.com/results?search_query=",
+        q + " educational documentary lecture"
+      )
+    },
+    {
+      type:"video",
+      icon:"🎓",
+      title:"विश्वविद्यालय व्याख्यान",
+      description:"शैक्षणिक पाठ्यक्रम और विशेषज्ञों के व्याख्यान।",
+      url:q => searchURL(
+        "https://www.youtube.com/results?search_query=",
+        q + " university lecture India"
+      )
+    },
+    {
+      type:"manuscript",
+      icon:"📜",
+      title:"Gyan Bharatam",
+      description:"भारतीय पांडुलिपियों का डिजिटल संग्रह।",
+      url:q => searchURL(
+        "https://www.google.com/search?q=",
+        "site:gyanbharatam.com " + q
+      )
+    },
+    {
+      type:"manuscript",
+      icon:"🏛️",
+      title:"Indian Culture Portal",
+      description:"पांडुलिपियाँ, दुर्लभ पुस्तकें, चित्र, वीडियो और सांस्कृतिक सामग्री।",
+      url:q => searchURL(
+        "https://www.google.com/search?q=",
+        "site:indianculture.gov.in " + q
+      )
+    },
+    {
+      type:"manuscript",
+      icon:"🗃️",
+      title:"Abhilekh Patal",
+      description:"राष्ट्रीय अभिलेखागार के ऐतिहासिक दस्तावेज।",
+      url:q => searchURL(
+        "https://www.google.com/search?q=",
+        "site:abhilekh-patal.in " + q
+      )
+    },
+    {
+      type:"books",
+      icon:"📚",
+      title:"National Digital Library",
+      description:"पुस्तकें, अध्ययन सामग्री, वीडियो और शैक्षिक संसाधन।",
+      url:q => searchURL(
+        "https://www.google.com/search?q=",
+        "site:ndl.iitkgp.ac.in " + q
+      )
+    },
+    {
+      type:"books",
+      icon:"🌐",
+      title:"Internet Archive",
+      description:"डिजिटल पुस्तकें, ऐतिहासिक सामग्री और मीडिया संग्रह।",
+      url:q => searchURL(
+        "https://archive.org/search?query=",
+        q
+      )
+    },
+    {
+      type:"books",
+      icon:"📖",
+      title:"Google Books",
+      description:"किताबों के शीर्षक, विवरण और उपलब्ध पूर्वावलोकन।",
+      url:q => searchURL(
+        "https://books.google.com/books?q=",
+        q
+      )
+    },
+    {
+      type:"research",
+      icon:"🔬",
+      title:"Google Scholar",
+      description:"शोध पत्र, अकादमिक लेख और विद्वानों का शोध।",
+      url:q => searchURL(
+        "https://scholar.google.com/scholar?q=",
+        q
+      )
+    },
+    {
+      type:"research",
+      icon:"🎓",
+      title:"Shodhganga",
+      description:"भारतीय विश्वविद्यालयों की शोध थीसिस।",
+      url:q => searchURL(
+        "https://www.google.com/search?q=",
+        "site:shodhganga.inflibnet.ac.in " + q
+      )
+    },
+    {
+      type:"research",
+      icon:"📑",
+      title:"DOAJ Open Access",
+      description:"मुक्त रूप से उपलब्ध अकादमिक जर्नल और शोध लेख।",
+      url:q => searchURL(
+        "https://doaj.org/search/articles/",
+        q
+      )
+    },
+    {
+      type:"images",
+      icon:"🖼️",
+      title:"Wikimedia Commons",
+      description:"ऐतिहासिक तस्वीरें, नक्शे और शैक्षिक मीडिया।",
+      url:q => searchURL(
+        "https://commons.wikimedia.org/w/index.php?search=",
+        q
+      )
+    },
+    {
+      type:"images",
+      icon:"🏺",
+      title:"Museums of India",
+      description:"संग्रहालयों की डिजिटल वस्तुएँ और कलाकृतियाँ।",
+      url:q => searchURL(
+        "https://www.google.com/search?q=",
+        "site:museumsofindia.gov.in " + q
+      )
+    },
+    {
+      type:"government",
+      icon:"🇮🇳",
+      title:"भारत सरकार के पोर्टल",
+      description:"सरकारी विभागों के आधिकारिक दस्तावेज और जानकारी।",
+      url:q => searchURL(
+        "https://www.google.com/search?q=",
+        "site:gov.in " + q
+      )
+    },
+    {
+      type:"government",
+      icon:"📊",
+      title:"Open Government Data",
+      description:"सरकारी डेटासेट और आँकड़े।",
+      url:q => searchURL(
+        "https://www.google.com/search?q=",
+        "site:data.gov.in " + q
+      )
+    }
   ];
 
-  searches.forEach(item => {
-    const a = document.createElement("a");
-    a.href = item[1];
-    a.target = "_blank";
-    a.rel = "noopener noreferrer";
-    a.textContent = "🔗 " + item[0];
-    a.style.display = "block";
-    a.style.margin = "12px 0";
-    a.style.color = "#1764a0";
-    box.appendChild(a);
+  window.brSearch = function () {
+
+    const query = root.querySelector("#br-query").value.trim();
+    const type = root.querySelector("#br-type").value;
+    const output = root.querySelector("#br-results");
+
+    output.replaceChildren();
+
+    if (!query) {
+      output.textContent = "कृपया पहले कोई विषय लिखें।";
+      return;
+    }
+
+    const heading = document.createElement("h3");
+    heading.textContent = "📚 " + query + " : खोज के संसाधन";
+    heading.style.marginTop = "25px";
+    output.appendChild(heading);
+
+    const grid = document.createElement("div");
+    grid.className = "br-grid";
+
+    const selected = resources.filter(item =>
+      type === "all" || item.type === type
+    );
+
+    selected.forEach(item => {
+
+      const card = document.createElement("div");
+      card.className = "br-card";
+
+      const title = document.createElement("h3");
+      title.textContent = item.icon + " " + item.title;
+
+      const description = document.createElement("p");
+      description.textContent = item.description;
+
+      const link = document.createElement("a");
+      link.className = "br-link";
+      link.textContent = "इस विषय की सामग्री खोजें →";
+      link.href = item.url(query);
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+
+      card.append(title, description, link);
+      grid.appendChild(card);
+    });
+
+    output.appendChild(grid);
+
+    const note = document.createElement("p");
+    note.textContent =
+      "नोट: ये खोज लिंक हैं। परिणामों की प्रासंगिकता और सामग्री की उपलब्धता संबंधित वेबसाइट पर निर्भर करेगी।";
+    note.style.marginTop = "18px";
+    note.style.fontSize = "13px";
+    note.style.color = "#667085";
+
+    output.appendChild(note);
+
+    output.scrollIntoView({behavior:"smooth", block:"nearest"});
+  };
+
+  root.querySelector("#br-query").addEventListener("keydown", e => {
+    if (e.key === "Enter") window.brSearch();
   });
-}
+
+})();
 </script>
 
+<!-- BHARAT RESOURCE FINDER END -->
+
+</body>
 </html>
