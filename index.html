@@ -1507,6 +1507,530 @@ Q0.addEventListener('input',()=>{clearTimeout(t4);const v=Q0.value.trim();if(v.l
 })();
 </script>
 <!-- ═══ BHARAT ADD-ON v4 END ═══ -->
+<!-- ═══ BHARAT ADD-ON v5 (Comprehensive Multi-Language Engine) START ═══ -->
+<style>
+#ba-lang-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+#ba-lang-select {
+  background: rgba(255, 255, 255, 0.14);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 8px;
+  padding: 5px 10px;
+  font-size: 13px;
+  font-weight: bold;
+  cursor: pointer;
+  outline: none;
+  transition: background 0.2s, border-color 0.2s;
+}
+#ba-lang-select:hover {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: var(--saffron);
+}
+#ba-lang-select option {
+  background: var(--navy);
+  color: #ffffff;
+}
+.ba-lang-badge {
+  display: inline-block;
+  font-size: 11px;
+  background: #fff0df;
+  color: #c7651b;
+  padding: 2px 8px;
+  border-radius: 12px;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+html[data-theme=dark] .ba-lang-badge {
+  background: #223049;
+  color: #ffb36c;
+}
+</style>
+
+<script>
+(function () {
+  // 1. 6 प्रमुख भाषाओं का संपूर्ण शब्दकोश (Comprehensive Translation Dictionary)
+  const DICT = {
+    hi: {
+      topLeft: "🇮🇳 भारत को जानो",
+      topRight: "ज्ञान • इतिहास • संस्कृति",
+      heroSub: "भारत की सभ्यता, संस्कृति, इतिहास और ज्ञान की अद्भुत यात्रा",
+      heroTag: "अपने देश को जानिए, उसके अतीत को समझिए और भविष्य को गढ़िए।",
+      heroBtn1: "ज्ञान की यात्रा शुरू करें",
+      heroBtn2: "हमारे बारे में",
+      nav: ["होम", "ज्ञान केंद्र", "इतिहास", "राज्य", "क्विज़", "स्रोत"],
+      introTitle: "भारत को जानने की शुरुआत",
+      introSub: "एक ऐसा ज्ञान केंद्र जहाँ भारत के अनेक पहलुओं को सरल भाषा में समझा जा सकता है।",
+      introBanner: "भारत केवल एक भौगोलिक क्षेत्र नहीं, बल्कि अनेक भाषाओं, परंपराओं, विचारों, ऐतिहासिक अनुभवों और जीवन-पद्धतियों से निर्मित एक विशाल देश है। इसे समझने के लिए इसके अतीत, वर्तमान और विविधता को साथ-साथ देखना जरूरी है।",
+      topicTitle: "📚 ज्ञान केंद्र",
+      topicSub: "किसी विषय को चुनिए और उसके बारे में विस्तार से पढ़िए।",
+      searchPh: "इतिहास, संस्कृति, संविधान या कोई विषय खोजें...",
+      emptyMsg: "इस नाम से कोई विषय नहीं मिला। दूसरा शब्द खोजें।",
+      readMore: "पूरा लेख पढ़ें →",
+      backBtn: "← विषयों पर वापस जाएँ",
+      printBtn: "लेख प्रिंट करें",
+      cards: [
+        { t: "भारतीय इतिहास", d: "प्राचीन सभ्यताओं, साम्राज्यों, मध्यकाल और आधुनिक भारत की ऐतिहासिक यात्रा।" },
+        { t: "भारतीय संस्कृति", d: "भाषाएँ, परंपराएँ, त्योहार, भोजन, संगीत, नृत्य और भारतीय जीवन की विविधता।" },
+        { t: "भारतीय संविधान", d: "संविधान निर्माण, प्रस्तावना, मौलिक अधिकार और नागरिक कर्तव्यों की जानकारी।" },
+        { t: "विज्ञान और तकनीक", d: "भारतीय गणित, खगोल विज्ञान, आधुनिक अनुसंधान और अंतरिक्ष कार्यक्रम।" },
+        { t: "भारत का भूगोल", d: "पर्वत, नदियाँ, मैदान, पठार, द्वीप, जलवायु और प्राकृतिक संपदा।" },
+        { t: "स्वतंत्रता आंदोलन", d: "औपनिवेशिक शासन के विरुद्ध संघर्ष, आंदोलन और स्वतंत्रता की यात्रा।" },
+        { t: "भारत की विरासत", d: "ऐतिहासिक स्मारक, स्थापत्य, पुरातत्व और विश्व धरोहर स्थल।" },
+        { t: "महान व्यक्तित्व", d: "विचारकों, वैज्ञानिकों, समाज सुधारकों और ऐतिहासिक व्यक्तित्वों का परिचय।" },
+        { t: "भारतीय अर्थव्यवस्था", d: "कृषि, उद्योग, सेवाएँ, व्यापार और आर्थिक विकास की मूल बातें।" }
+      ],
+      timeTitle: "⏳ भारतीय इतिहास : एक समयरेखा",
+      timeSub: "इतिहास की कुछ महत्वपूर्ण घटनाओं को क्रम से समझिए।",
+      statesTitle: "🗺️ भारत के राज्य और केंद्रशासित प्रदेश",
+      statesSub: "भारत की प्रशासनिक विविधता का परिचय।",
+      statesH3: "28 राज्य",
+      utsH3: "8 केंद्रशासित प्रदेश",
+      quizTitle: "🧠 अपना ज्ञान परखें",
+      quizSub: "कुछ सवालों के उत्तर देकर देखिए कि आपने कितना सीखा।",
+      rfTitle: "🔎 Bharat Resource Finder",
+      rfSub: "किसी भी विषय से संबंधित वीडियो, पांडुलिपियाँ, पुस्तकें, शोध पत्र, ऐतिहासिक दस्तावेज और सरकारी जानकारी एक ही जगह खोजें।",
+      rfBtn: "🔍 संसाधन खोजें",
+      sourcesTitle: "🔎 अध्ययन और संदर्भ स्रोत",
+      sourcesSub: "अधिक गहराई से अध्ययन करने के लिए उपयोगी संस्थागत वेबसाइटें।",
+      aboutTitle: "हमारे बारे में",
+      footerTag: "भारत को जानो • इतिहास को समझो • ज्ञान को आगे बढ़ाओ",
+      footerNote: "शैक्षिक उद्देश्य के लिए निर्मित"
+    },
+
+    en: {
+      topLeft: "🇮🇳 Know About Bharat",
+      topRight: "Knowledge • History • Culture",
+      heroSub: "An extraordinary journey through India's civilization, culture, history, and wisdom",
+      heroTag: "Know your nation, understand its past, and shape the future.",
+      heroBtn1: "Start Knowledge Journey",
+      heroBtn2: "About Us",
+      nav: ["Home", "Knowledge Hub", "Timeline", "States", "Quiz", "Sources"],
+      introTitle: "Beginning the Journey to Know Bharat",
+      introSub: "A knowledge hub where multiple dimensions of India can be understood in simple language.",
+      introBanner: "India is not merely a geographical territory, but a vast nation shaped by diverse languages, traditions, philosophies, historical experiences, and ways of life. Understanding it requires viewing its past, present, and diversity together.",
+      topicTitle: "📚 Knowledge Hub",
+      topicSub: "Choose any topic and read about it in comprehensive detail.",
+      searchPh: "Search history, culture, constitution, or any topic...",
+      emptyMsg: "No topic found with this keyword. Try another word.",
+      readMore: "Read Full Article →",
+      backBtn: "← Back to Topics",
+      printBtn: "Print Article",
+      cards: [
+        { t: "Indian History", d: "Historical journey of ancient civilizations, empires, medieval era, and modern India." },
+        { t: "Indian Culture", d: "Languages, traditions, festivals, cuisine, music, dance, and diversity of Indian life." },
+        { t: "Indian Constitution", d: "Information on constitution making, preamble, fundamental rights, and citizen duties." },
+        { t: "Science & Technology", d: "Indian mathematics, astronomy, modern research, and space exploration programs." },
+        { t: "Geography of India", d: "Mountains, rivers, plains, plateaus, islands, climate, and natural wealth." },
+        { t: "Freedom Movement", d: "Struggle against colonial rule, mass movements, and the journey to independence." },
+        { t: "Heritage of India", d: "Historical monuments, architecture, archaeology, and UNESCO World Heritage sites." },
+        { t: "Great Personalities", d: "Introduction to thinkers, scientists, social reformers, and historical figures." },
+        { t: "Indian Economy", d: "Fundamentals of agriculture, industries, services, trade, and economic development." }
+      ],
+      timeTitle: "⏳ Indian History: A Timeline",
+      timeSub: "Understand major historical milestones in chronological order.",
+      statesTitle: "🗺️ States and Union Territories of India",
+      statesSub: "An overview of India's administrative diversity.",
+      statesH3: "28 States",
+      utsH3: "8 Union Territories",
+      quizTitle: "🧠 Test Your Knowledge",
+      quizSub: "Answer a few questions to see how much you have learned.",
+      rfTitle: "🔎 Bharat Resource Finder",
+      rfSub: "Search videos, manuscripts, books, research papers, historical archives, and government data on any topic in one place.",
+      rfBtn: "🔍 Find Resources",
+      sourcesTitle: "🔎 Study & Reference Sources",
+      sourcesSub: "Useful institutional websites for deeper academic study.",
+      aboutTitle: "About Us",
+      footerTag: "Know Bharat • Understand History • Advance Knowledge",
+      footerNote: "Created for Educational Purposes"
+    },
+
+    sa: {
+      topLeft: "🇮🇳 भारतं जानीहि",
+      topRight: "ज्ञानम् • इतिहासः • संस्कृतिः",
+      heroSub: "भारतस्य सभ्यतायाः, संस्कृतेः, इतिहासस्य, ज्ञानस्य च अद्भुतयात्रा",
+      heroTag: "स्वदेशं जानीहि, तस्य अतीतं अवगच्छ, भविष्यं च निर्माहि।",
+      heroBtn1: "ज्ञानयात्रां आरभत",
+      heroBtn2: "अस्माकं विषये",
+      nav: ["गृहम्", "ज्ञानकेन्द्रम्", "इतिहासः", "राज्यानि", "प्रश्नोत्तरी", "स्रोतांसि"],
+      introTitle: "भारतपरिचयस्य आरम्भः",
+      introSub: "एतादृशं ज्ञानकेन्द्रं यत्र भारतस्य विविधाः पक्षाः सरलभाषया अवगन्तुं शक्यन्ते।",
+      introBanner: "भारतं केवलं भौगोलिकं क्षेत्रं नास्ति, अपितु अनेकभाषाभिः, परम्पराभिः, विचारैः, ऐतिहासिकानुभवैः च निर्मितः विशालः देशः अस्ति।",
+      topicTitle: "📚 ज्ञानकेन्द्रम्",
+      topicSub: "कमपि विषयं चित्वा विस्तरेण पठत।",
+      searchPh: "इतिहासः, संस्कृतिः, संविधानं वा किमपि अन्विषत...",
+      emptyMsg: "अनेन नाम्ना कोऽपि विषयः न प्राप्तः। अन्यं शब्दं अन्विषत।",
+      readMore: "संपूर्णं लेखं पठत →",
+      backBtn: "← विषयेषु प्रतिगच्छत",
+      printBtn: "लेखं मुद्रयत",
+      cards: [
+        { t: "भारतीयः इतिहासः", d: "प्राचीनसभ्यतानां, साम्राज्यानां, मध्यकालस्य आधुनिकभारतस्य च ऐतिहासिकी यात्रा।" },
+        { t: "भारतीयसंस्कृतिः", d: "भाषाः, परम्पराः, उत्सवाः, भोजनम्, सङ्गीतम्, नृत्यं च भारतीयजीवनस्य विविधता।" },
+        { t: "भारतीयसंविधानम्", d: "संविधाननिर्माणम्, उद्देशिका, मौलिकाधिकाराः नागरिककर्तव्यानि च।" },
+        { t: "विज्ञानं तन्त्रज्ञानं च", d: "भारतीयगणितम्, खगोलशास्त्रम्, आधुनिकानुसन्धानम् अन्तरिक्षकार्यक्रमाः च।" },
+        { t: "भारतस्य भूगोलः", d: "पर्वताः, नद्यः, समतलभूमयः, द्वीपाः, जलवायुः प्राकृतिकसम्पदा च।" },
+        { t: "स्वतन्त्रतान्दोलम्", d: "औपनिवेशिकशासनस्य विरुद्धं सङ्घर्षः, आन्दोलनानि स्वतन्त्रतायात्रा च।" },
+        { t: "भारतस्य विरासतः", d: "ऐतिहासिकस्मारकाणि, स्थापत्यकला, पुरातत्त्वं विश्वधरोहरस्थलानि च।" },
+        { t: "महान्तः व्यक्तित्वाः", d: "विचारकाणां, वैज्ञानिकानां, समाजसुधारकाणां च परिचयः।" },
+        { t: "भारतीयअर्थव्यवस्था", d: "कृषिः, उद्योगाः, सेवाः, व्यापारः आर्थिकविकासस्य च मूलतत्त्वानि।" }
+      ],
+      timeTitle: "⏳ भारतीयः इतिहासः : कालरेखा",
+      timeSub: "इतिहासस्य प्रमुखघटनाः क्रमेण अवगच्छत।",
+      statesTitle: "🗺️ भारतस्य राज्यानि केन्द्रशासितप्रदेशाः च",
+      statesSub: "भारतस्य प्रशासनिकविविधतायाः परिचयः।",
+      statesH3: "२८ राज्यानि",
+      utsH3: "८ केन्द्रशासितप्रदेशाः",
+      quizTitle: "🧠 स्वज्ञानं परीक्षस्व",
+      quizSub: "कतिपयानां प्रश्नानाम् उत्तराणि दत्त्वा पश्यत यत् भवद्भिः कियत् अधीतम्।",
+      rfTitle: "🔎 भारत-संसाधन-अन्वेषकः",
+      rfSub: "कस्यापि विषयस्य चलच्चित्राणि, पाण्डुलिपयः, पुस्तकानि, शोधपत्राणि च एकस्मिन् स्थाने अन्विषत।",
+      rfBtn: "🔍 संसाधनानि अन्विषत",
+      sourcesTitle: "🔎 अध्ययनसन्दर्भस्रोतांसि",
+      sourcesSub: "गहनतरअध्ययनाय उपयोगिनः संस्थागतजालपुटाः।",
+      aboutTitle: "अस्माकं विषये",
+      footerTag: "भारतं जानीहि • इतिहासम् अवगच्छ • ज्ञानं वर्धय",
+      footerNote: "शैक्षणिकोद्देश्याय निर्मितम्"
+    },
+
+    bn: {
+      topLeft: "🇮🇳 ভারতকে জানো",
+      topRight: "জ্ঞান • ইতিহাস • সংস্কৃতি",
+      heroSub: "ভারতের সভ্যতা, সংস্কৃতি, ইতিহাস এবং জ্ঞানের এক অদ্ভুত যাত্রা",
+      heroTag: "নিজের দেশকে জানুন, তার অতীতকে বুঝুন এবং ভবিষ্যৎ গড়ে তুলুন।",
+      heroBtn1: "জ্ঞানের যাত্রা শুরু করুন",
+      heroBtn2: "আমাদের সম্পর্কে",
+      nav: ["হোম", "জ্ঞান কেন্দ্র", "ইতিহাস", "রাজ্য", "কুইজ", "উৎস"],
+      introTitle: "ভারতকে জানার শুরু",
+      introSub: "এমন একটি জ্ঞান কেন্দ্র যেখানে ভারতের নানা দিক সহজ ভাষায় বোঝা যায়।",
+      introBanner: "ভারত কেবল একটি ভৌগোলিক অঞ্চল নয়, বরং বহু ভাষা, ঐতিহ্য, দর্শন ও জীবনধারার সমন্বয়ে গঠিত এক বিশাল দেশ।",
+      topicTitle: "📚 জ্ঞান কেন্দ্র",
+      topicSub: "যেকোনো বিষয় নির্বাচন করুন এবং বিস্তারিত পড়ুন।",
+      searchPh: "ইতিহাস, সংস্কৃতি, সংবিধান বা যেকোনো বিষয় খুঁজুন...",
+      emptyMsg: "এই নামে কোনো বিষয় পাওয়া যায়নি। অন্য শব্দ খুঁজুন।",
+      readMore: "সম্পূর্ণ প্রবন্ধ পড়ুন →",
+      backBtn: "← বিষয়গুলিতে ফিরে যান",
+      printBtn: "প্রবন্ধ প্রিন্ট করুন",
+      cards: [
+        { t: "ভারতীয় ইতিহাস", d: "প্রাচীন সভ্যতা, সাম্রাজ্য, মধ্যযুগ এবং আধুনিক ভারতের ঐতিহাসিক যাত্রা।" },
+        { t: "ভারতীয় সংস্কৃতি", d: "ভাষা, ঐতিহ্য, উৎসব, খাদ্য, সংগীত, নৃত্য এবং ভারতীয় জীবনের বৈচিত্র্য।" },
+        { t: "ভারতীয় সংবিধান", d: "সংবিধান প্রণয়ন, প্রস্তাবনা, মৌলিক অধিকার এবং নাগরিক কর্তব্যের তথ্য।" },
+        { t: "বিজ্ঞান ও প্রযুক্তি", d: "ভারতীয় গণিত, জ্যোতির্বিজ্ঞান, আধুনিক গবেষণা এবং মহাকাশ কর্মসূচি।" },
+        { t: "ভারতের ভূগোল", d: "পর্বত, নদ-নদী, সমভূমি, মালভূমি, দ্বীপপুঞ্জ, জলবায়ু এবং প্রাকৃতিক সম্পদ।" },
+        { t: "স্বাধীনতা আন্দোলন", d: "ঔপনিবেশিক শাসনের বিরুদ্ধে সংগ্রাম, আন্দোলন এবং স্বাধীনতার যাত্রা।" },
+        { t: "ভারতের ঐতিহ্য", d: "ঐতিহাসিক স্মৃতিস্তম্ভ, স্থাপত্য, প্রত্নতত্ত্ব এবং বিশ্ব ঐতিহ্যবাহী স্থান।" },
+        { t: "মহান ব্যক্তিত্ব", d: "চিন্তাবিদ, বিজ্ঞানী, সমাজ সংস্কারক এবং ঐতিহাসিক ব্যক্তিত্বদের পরিচিতি।" },
+        { t: "ভারতীয় অর্থনীতি", d: "কৃষি, শিল্প, পরিষেবা, বাণিজ্য এবং অর্থনৈতিক উন্নয়নের মূল কথা।" }
+      ],
+      timeTitle: "⏳ ভারতীয় ইতিহাস : একটি সময়রেখা",
+      timeSub: "ইতিহাসের কিছু গুরুত্বপূর্ণ ঘটনা ক্রমানুসারে বুঝুন।",
+      statesTitle: "🗺️ ভারতের রাজ্য ও কেন্দ্রশাসিত অঞ্চল",
+      statesSub: "ভারতের প্রশাসনিক বৈচিত্র্যের পরিচিতি।",
+      statesH3: "২৮টি রাজ্য",
+      utsH3: "৮টি কেন্দ্রশাসিত অঞ্চল",
+      quizTitle: "🧠 নিজের জ্ঞান যাচাই করুন",
+      quizSub: "কয়েকটি প্রশ্নের উত্তর দিয়ে দেখুন আপনি কতটা শিখেছেন।",
+      rfTitle: "🔎 Bharat Resource Finder",
+      rfSub: "যেকোনো বিষয় সম্পর্কিত ভিডিও, পাণ্ডুলিপি, বই, গবেষণাপত্র এবং সরকারি তথ্য এক জায়গায় খুঁজুন।",
+      rfBtn: "🔍 সম্পদ খুঁজুন",
+      sourcesTitle: "🔎 অধ্যয়ন ও রেফারেন্স উৎস",
+      sourcesSub: "আরও গভীরভাবে অধ্যয়নের জন্য প্রয়োজনীয় প্রাতিষ্ঠানিক ওয়েবসাইট।",
+      aboutTitle: "আমাদের সম্পর্কে",
+      footerTag: "ভারতকে জানো • ইতিহাসকে বোঝো • জ্ঞানকে এগিয়ে নিয়ে যাও",
+      footerNote: "শিক্ষামূলক উদ্দেশ্যে নির্মিত"
+    },
+
+    mr: {
+      topLeft: "🇮🇳 भारताला जाणून घ्या",
+      topRight: "ज्ञान • इतिहास • संस्कृती",
+      heroSub: "भारताची सभ्यता, संस्कृती, इतिहास आणि ज्ञानाचा अद्भुत प्रवास",
+      heroTag: "आपल्या देशाला जाणून घ्या, त्याचा भूतकाळ समजून घ्या आणि भविष्य घडवा.",
+      heroBtn1: "ज्ञानप्रवास सुरू करा",
+      heroBtn2: "आमच्याबद्दल",
+      nav: ["मुख्यपृष्ठ", "ज्ञान केंद्र", "इतिहास", "राज्ये", "प्रश्नमंजुषा", "स्रोत"],
+      introTitle: "भारताला जाणून घेण्याची सुरुवात",
+      introSub: "एक असे ज्ञान केंद्र जिथे भारताचे अनेक पैलू सोप्या भाषेत समजून घेता येतात.",
+      introBanner: "भारत हा केवळ एक भौगोलिक प्रदेश नसून अनेक भाषा, परंपरा, विचार आणि जीवनपद्धतींनी बनलेला एक विशाल देश आहे.",
+      topicTitle: "📚 ज्ञान केंद्र",
+      topicSub: "कोणताही विषय निवडा आणि त्याबद्दल सविस्तर वाचा.",
+      searchPh: "इतिहास, संस्कृती, संविधान किंवा कोणताही विषय शोधा...",
+      emptyMsg: "या नावाने कोणताही विषय सापडला नाही. दुसरा शब्द शोधा.",
+      readMore: "संपूर्ण लेख वाचा →",
+      backBtn: "← विषयांवर परत जा",
+      printBtn: "लेख प्रिंट करा",
+      cards: [
+        { t: "भारतीय इतिहास", d: "प्राचीन संस्कृती, साम्राज्ये, मध्ययुगीन आणि आधुनिक भारताचा ऐतिहासिक प्रवास." },
+        { t: "भारतीय संस्कृती", d: "भाषा, परंपरा, सण, खाद्यसंस्कृती, संगीत, नृत्य आणि भारतीय जीवनातील विविधता." },
+        { t: "भारतीय संविधान", d: "संविधान निर्मिती, उद्देशिका, मूलभूत हक्क आणि नागरिकांच्या कर्तव्यांची माहिती." },
+        { t: "विज्ञान आणि तंत्रज्ञान", d: "भारतीय गणित, खगोलशास्त्र, आधुनिक संशोधन आणि अंतराळ कार्यक्रम." },
+        { t: "भारताचा भूगोल", d: "पर्वत, नद्या, मैदाने, पठारे, बेटे, हवामान आणि नैसर्गिक संपत्ती." },
+        { t: "स्वातंत्र्य चळवळ", d: "वसाहतवादी राजवटीविरुद्धचा संघर्ष, चळवळी आणि स्वातंत्र्याचा प्रवास." },
+        { t: "भारताचा वारसा", d: "ऐतिहासिक स्मारके, स्थापत्यकला, पुरातत्व आणि जागतिक वारसा स्थळे." },
+        { t: "महान व्यक्तिमत्त्वे", d: "विचारवंत, शास्त्रज्ञ, समाजसुधारक आणि ऐतिहासिक व्यक्तिमत्त्वांचा परिचय." },
+        { t: "भारतीय अर्थव्यवस्था", d: "शेती, उद्योग, सेवा, व्यापार आणि आर्थिक विकासाची मूलभूत माहिती." }
+      ],
+      timeTitle: "⏳ भारतीय इतिहास : एक कालरेषा",
+      timeSub: "इतिहासातील काही महत्त्वाच्या घटना क्रमाने समजून घ्या.",
+      statesTitle: "🗺️ भारताची राज्ये आणि केंद्रशासित प्रदेश",
+      statesSub: "भारताच्या प्रशासकीय विविधतेचा परिचय.",
+      statesH3: "२८ राज्ये",
+      utsH3: "८ केंद्रशासित प्रदेश",
+      quizTitle: "🧠 तुमचे ज्ञान तपासा",
+      quizSub: "काही प्रश्नांची उत्तरे देऊन पहा की तुम्ही किती शिकलात.",
+      rfTitle: "🔎 Bharat Resource Finder",
+      rfSub: "कोणत्याही विषयाशी संबंधित व्हिडिओ, हस्तलिखिते, पुस्तके, शोधनिबंध आणि सरकारी माहिती एकाच ठिकाणी शोधा.",
+      rfBtn: "🔍 संसाधने शोधा",
+      sourcesTitle: "🔎 अभ्यास आणि संदर्भ स्रोत",
+      sourcesSub: "अधिक सखोल अभ्यासासाठी उपयुक्त संस्थात्मक वेबसाइट्स.",
+      aboutTitle: "आमच्याबद्दल",
+      footerTag: "भारताला जाणून घ्या • इतिहास समजून घ्या • ज्ञान पुढे न्या",
+      footerNote: "शैक्षणिक हेतूसाठी निर्मित"
+    },
+
+    ta: {
+      topLeft: "🇮🇳 பாரதத்தை அறிவோம்",
+      topRight: "அறிவு • வரலாறு • கலாச்சாரம்",
+      heroSub: "இந்தியாவின் நாகரிகம், கலாச்சாரம், வரலாறு மற்றும் அறிவின் அற்புதப் பயணம்",
+      heroTag: "உங்கள் நாட்டை அறிந்து கொள்ளுங்கள், அதன் கடந்த காலத்தைப் புரிந்து கொண்டு எதிர்காலத்தை வடிவமைக்கவும்.",
+      heroBtn1: "அறிவுப் பயணத்தைத் தொடங்குங்கள்",
+      heroBtn2: "எங்களைப் பற்றி",
+      nav: ["முகப்பு", "அறிவு மையம்", "வரலாறு", "மாநிலங்கள்", "வினாடி வினா", "ஆதாரங்கள்"],
+      introTitle: "பாரதத்தை அறியும் தொடக்கம்",
+      introSub: "இந்தியாவின் பல்வேறு பரிமாணங்களை எளிய மொழியில் புரிந்துகொள்ளும் ஒரு அறிவு மையம்.",
+      introBanner: "இந்தியா என்பது வெறும் நிலப்பரப்பு மட்டுமல்ல, பல மொழிகள், மரபுகள், தத்துவங்கள் மற்றும் வரலாற்று அனுபவங்களால் உருவான ஒரு மாபெரும் தேசம்.",
+      topicTitle: "📚 அறிவு மையம்",
+      topicSub: "ஏதேனும் ஒரு தலைப்பைத் தேர்ந்தெடுத்து விரிவாகப் படியுங்கள்.",
+      searchPh: "வரலாறு, கலாச்சாரம், அரசியலமைப்பு அல்லது தலைப்பைத் தேடுங்கள்...",
+      emptyMsg: "இந்தப் பெயரில் தலைப்பு எதுவும் கிடைக்கவில்லை. வேறு வார்த்தையைத் தேடுங்கள்.",
+      readMore: "முழுக் கட்டுரையைப் படியுங்கள் →",
+      backBtn: "← தலைப்புகளுக்குத் திரும்புக",
+      printBtn: "கட்டுரையை அச்சிடுக",
+      cards: [
+        { t: "இந்திய வரலாறு", d: "பண்டைய நாகரிகங்கள், பேரரசுகள், இடைக்காலம் மற்றும் நவீன இந்தியாவின் வரலாற்றுப் பயணம்." },
+        { t: "இந்திய கலாச்சாரம்", d: "மொழிகள், மரபுகள், பண்டிகைகள், உணவு, இசை, நடனம் மற்றும் இந்திய வாழ்வின் பன்முகத்தன்மை." },
+        { t: "இந்திய அரசியலமைப்பு", d: "அரசியலமைப்பு உருவாக்கம், முகவுரை, அடிப்படை உரிமைகள் மற்றும் குடிமக்களின் கடமைகள்." },
+        { t: "அறிவியல் மற்றும் தொழில்நுட்பம்", d: "இந்திய கணிதம், வானியல், நவீன ஆராய்ச்சி மற்றும் விண்வெளித் திட்டங்கள்." },
+        { t: "இந்தியாவின் புவியியல்", d: "மலைகள், ஆறுகள், சமவெளிகள், பீடபூமிகள், தீவுகள், காலநிலை மற்றும் இயற்கை வளங்கள்." },
+        { t: "சுதந்திரப் போராட்டம்", d: "காலனித்துவ ஆட்சிக்கு எதிரான போராட்டம், இயக்கங்கள் மற்றும் சுதந்திரப் பயணம்." },
+        { t: "இந்தியாவின் பாரம்பரியம்", d: "வரலாற்று நினைவுச்சின்னங்கள், கட்டிடக்கலை, தொல்லியல் மற்றும் உலக பாரம்பரிய தளங்கள்." },
+        { t: "சிறந்த ஆளுமைகள்", d: "சிந்தனையாளர்கள், விஞ்ஞானிகள், சமூக சீர்திருத்தவாதிகள் மற்றும் வரலாற்று ஆளுமைகள்." },
+        { t: "இந்தியப் பொருளாதாரம்", d: "விவசாயம், தொழில்கள், சேவைகள், வர்த்தகம் மற்றும் பொருளாதார வளர்ச்சியின் அடிப்படைகள்." }
+      ],
+      timeTitle: "⏳ இந்திய வரலாறு : ஒரு காலவரிசை",
+      timeSub: "வரலாற்றின் முக்கிய நிகழ்வுகளை வரிசைப்படி புரிந்து கொள்ளுங்கள்.",
+      statesTitle: "🗺️ இந்தியாவின் மாநிலங்கள் மற்றும் யூனியன் பிரதேசங்கள்",
+      statesSub: "இந்தியாவின் நிர்வாகப் பன்முகத்தன்மை பற்றிய அறிமுகம்.",
+      statesH3: "28 மாநிலங்கள்",
+      utsH3: "8 யூனியன் பிரதேசங்கள்",
+      quizTitle: "🧠 உங்கள் அறிவைச் சோதியுங்கள்",
+      quizSub: "நீங்கள் எவ்வளவு கற்றுக்கொண்டீர்கள் என்பதை அறிய சில கேள்விகளுக்குப் பதிலளிக்கவும்.",
+      rfTitle: "🔎 Bharat Resource Finder",
+      rfSub: "எந்தவொரு தலைப்பு தொடர்பான வீடியோக்கள், கையெழுத்துப் பிரதிகள், புத்தகங்கள் மற்றும் ஆய்வுக் கட்டுரைகளை ஒரே இடத்தில் தேடுங்கள்.",
+      rfBtn: "🔍 ஆதாரங்களைத் தேடுங்கள்",
+      sourcesTitle: "🔎 ஆய்வு மற்றும் குறிப்பு ஆதாரங்கள்",
+      sourcesSub: "ஆழமான கல்வி ஆய்வுக்குப் பயனுள்ள நிறுவன இணையதளங்கள்.",
+      aboutTitle: "எங்களைப் பற்றி",
+      footerTag: "பாரதத்தை அறிவோம் • வரலாற்றைப் புரிந்துகொள்வோம் • அறிவை வளர்ப்போம்",
+      footerNote: "கல்வி நோக்கத்திற்காக உருவாக்கப்பட்டது"
+    }
+  };
+
+  // 2. टॉपबार में भाषा चयन ड्रॉपडाउन जोड़ना
+  const topbarRight = document.querySelector(".topbar span:last-child");
+  if (topbarRight) {
+    const wrap = document.createElement("span");
+    wrap.id = "ba-lang-wrap";
+
+    const select = document.createElement("select");
+    select.id = "ba-lang-select";
+    select.setAttribute("aria-label", "Select Language");
+    select.innerHTML = `
+      <option value="hi">🇮🇳 हिन्दी (Hindi)</option>
+      <option value="en">🇬🇧 English</option>
+      <option value="sa">📜 संस्कृतम् (Sanskrit)</option>
+      <option value="bn">🇧🇩 বাংলা (Bengali)</option>
+      <option value="mr">🚩 मराठी (Marathi)</option>
+      <option value="ta">🏛️ தமிழ் (Tamil)</option>
+    `;
+
+    const savedLang = localStorage.getItem("kab_lang") || "hi";
+    select.value = savedLang;
+
+    select.addEventListener("change", (e) => {
+      const lang = e.target.value;
+      localStorage.setItem("kab_lang", lang);
+      applyFullLanguage(lang);
+    });
+
+    topbarRight.after(wrap);
+    wrap.appendChild(select);
+    applyFullLanguage(savedLang);
+  }
+
+  // 3. पूरी वेबसाइट पर भाषा लागू करने वाला फंक्शन
+  function applyFullLanguage(lang) {
+    const t = DICT[lang];
+    if (!t) return;
+
+    document.documentElement.lang = lang;
+
+    // Topbar
+    const topLeft = document.querySelector(".topbar span:first-child");
+    if (topLeft) topLeft.textContent = t.topLeft;
+    if (topbarRight) topbarRight.textContent = t.topRight;
+
+    // Hero Section
+    const heroSub = document.querySelector(".hero p:not(.tagline)");
+    const heroTag = document.querySelector(".hero .tagline");
+    const heroBtn1 = document.querySelector(".hero-buttons .btn-dark");
+    const heroBtn2 = document.querySelector(".hero-buttons .btn-light");
+    if (heroSub) heroSub.textContent = t.heroSub;
+    if (heroTag) heroTag.textContent = t.heroTag;
+    if (heroBtn1) heroBtn1.textContent = t.heroBtn1;
+    if (heroBtn2) heroBtn2.textContent = t.heroBtn2;
+
+    // Navigation Bar
+    const navLinks = document.querySelectorAll("nav a");
+    navLinks.forEach((a, i) => {
+      if (t.nav[i]) a.textContent = t.nav[i];
+    });
+
+    // Intro Section
+    const allSections = document.querySelectorAll("main > section.section");
+    if (allSections[0]) {
+      const h2 = allSections[0].querySelector("h2");
+      const p = allSections[0].querySelector(".section-heading p");
+      const banner = allSections[0].querySelector(".article-banner");
+      if (h2) h2.textContent = t.introTitle;
+      if (p) p.textContent = t.introSub;
+      if (banner) banner.textContent = t.introBanner;
+    }
+
+    // Knowledge Center (#topics)
+    const topicH2 = document.querySelector("#topics .section-heading h2");
+    const topicP = document.querySelector("#topics .section-heading p");
+    const searchInput = document.getElementById("searchInput");
+    const emptyMsg = document.getElementById("emptyMessage");
+    if (topicH2) topicH2.textContent = t.topicTitle;
+    if (topicP) topicP.textContent = t.topicSub;
+    if (searchInput) searchInput.placeholder = t.searchPh;
+    if (emptyMsg) emptyMsg.textContent = t.emptyMsg;
+
+    // 9 Topic Cards
+    const cards = document.querySelectorAll("#topicGrid .card");
+    cards.forEach((card, idx) => {
+      if (t.cards[idx]) {
+        const h3 = card.querySelector("h3");
+        const p = card.querySelector("p");
+        const btn = card.querySelector("button");
+        if (h3) h3.textContent = t.cards[idx].t;
+        if (p) p.textContent = t.cards[idx].d;
+        if (btn) btn.textContent = t.readMore;
+      }
+    });
+
+    // Article Action Buttons
+    const artBtns = document.querySelectorAll("#articleArea .article-actions button");
+    if (artBtns[0]) artBtns[0].textContent = t.backBtn;
+    if (artBtns[1]) artBtns[1].textContent = t.printBtn;
+
+    // Timeline Section (#timeline)
+    const timeH2 = document.querySelector("#timeline .section-heading h2");
+    const timeP = document.querySelector("#timeline .section-heading p");
+    if (timeH2) timeH2.textContent = t.timeTitle;
+    if (timeP) timeP.textContent = t.timeSub;
+
+    // States Section (#states)
+    const stH2 = document.querySelector("#states .section-heading h2");
+    const stP = document.querySelector("#states .section-heading p");
+    const stH3s = document.querySelectorAll("#states .card h3");
+    if (stH2) stH2.textContent = t.statesTitle;
+    if (stP) stP.textContent = t.statesSub;
+    if (stH3s[0]) stH3s[0].textContent = t.statesH3;
+    if (stH3s[1]) stH3s[1].textContent = t.utsH3;
+
+    // Quiz Section (#quiz)
+    const qzH2 = document.querySelector("#quiz .section-heading h2");
+    const qzP = document.querySelector("#quiz .section-heading p");
+    if (qzH2) qzH2.textContent = t.quizTitle;
+    if (qzP) qzP.textContent = t.quizSub;
+
+    // Resource Finder (#bharat-resource)
+    const rfH2 = document.querySelector("#bharat-resource h2");
+    const rfP = document.querySelector("#bharat-resource .br-subtitle");
+    const rfBtn = document.querySelector("#bharat-resource .br-button");
+    if (rfH2) rfH2.textContent = t.rfTitle;
+    if (rfP) rfP.textContent = t.rfSub;
+    if (rfBtn) rfBtn.textContent = t.rfBtn;
+
+    // Sources Section (#sources)
+    const srcH2 = document.querySelector("#sources .section-heading h2");
+    const srcP = document.querySelector("#sources .section-heading p");
+    if (srcH2) srcH2.textContent = t.sourcesTitle;
+    if (srcP) srcP.textContent = t.sourcesSub;
+
+    // About & Footer
+    const abH2 = document.querySelector("#about h2");
+    if (abH2) abH2.textContent = t.aboutTitle;
+
+    const ftPs = document.querySelectorAll("footer p");
+    if (ftPs[0]) ftPs[0].textContent = t.footerTag;
+    if (ftPs[1]) ftPs[1].textContent = t.footerNote;
+  }
+
+  // 4. जब कोई लंबा लेख (Article) खुले, तो उसमें ऑटो-ट्रांसलेशन विकल्प जोड़ना
+  const origOpenArticle = window.openArticle;
+  if (typeof origOpenArticle === "function") {
+    window.openArticle = function (key) {
+      origOpenArticle(key);
+      const currentLang = localStorage.getItem("kab_lang") || "hi";
+      const metaEl = document.getElementById("articleMeta");
+      if (metaEl && currentLang !== "hi") {
+        // अगर यूज़र ने हिंदी के अलावा कोई भाषा चुनी है, तो लेख को उस भाषा में पढ़ने के लिए तुरंत Google Translate लिंक/विजेट दें
+        const existingBadge = document.getElementById("ba-art-trans");
+        if (existingBadge) existingBadge.remove();
+
+        const badge = document.createElement("span");
+        badge.id = "ba-art-trans";
+        badge.className = "ba-lang-badge";
+        badge.style.cursor = "pointer";
+        badge.textContent = "🌐 इस लेख को चुनी हुई भाषा में अनुवादित करें (Translate Article)";
+        badge.onclick = () => translateArticleContent(currentLang);
+        metaEl.appendChild(badge);
+      }
+    };
+  }
+
+  // क्लाइंट-साइड फ्री अनुवाद इंजन (बिना किसी API Key के)
+  async function translateArticleContent(targetLang) {
+    const contentEl = document.getElementById("articleContent");
+    const titleEl = document.getElementById("articleTitle");
+    const badge = document.getElementById("ba-art-trans");
+    if (!contentEl || !badge) return;
+
+    badge.textContent = "⏳ अनुवाद हो रहा है... कृपया प्रतीक्षा करें";
+    try {
+      const blocks = [titleEl, ...contentEl.querySelectorAll("h3, p, .article-banner, .info-box")];
+      for (const el of blocks) {
+        const originalText = el.innerText.trim();
+        if (!originalText) continue;
+        const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=hi&tl=${targetLang}&dt=t&q=${encodeURIComponent(originalText)}`;
+        const res = await fetch(url);
+        const data = await res.json();
+        if (data && data[0]) {
+          el.textContent = data[0].map(item => item[0]).join("");
+        }
+      }
+      badge.textContent = "✅ अनुवाद पूर्ण हुआ";
+    } catch (err) {
+      badge.textContent = "⚠️ इंटरनेट कनेक्शन की जाँच करें";
+    }
+  }
+})();
+</script>
+<!-- ═══ BHARAT ADD-ON v5 (Comprehensive Multi-Language Engine) END ═══ -->
 
 </body>
 </html>
