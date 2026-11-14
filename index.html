@@ -1389,6 +1389,88 @@ if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWor
 })();
 </script>
 <!-- ═══ BHARAT ADD-ON v2 END ═══ -->
+<!-- ═══ BHARAT ADD-ON v3 START ═══
+  v2 वाले ब्लॉक के ठीक बाद, </body> से पहले चिपकाएँ। पुराना कोड नहीं बदलना। -->
+<style>
+.kab3-chips{display:flex;flex-wrap:wrap;gap:6px;padding:6px 4px 8px}
+.kab3-chip{border:1px solid #e5e9f0;background:#fff;color:inherit;border-radius:20px;padding:6px 12px;font:inherit;font-size:13px;cursor:pointer}
+.kab3-chip:hover{background:#fff4ea;border-color:#e97824}
+.kab3 h5{margin:8px 6px 2px;font-size:13px;color:#667085}
+.kab3-star{font-size:11px;color:#c7651b;margin-left:6px}
+html[data-theme=dark] .kab3-chip{background:#223049;color:#e6ebf5;border-color:#2a3750}
+</style>
+<script>
+(function(){
+const $=(s,r=document)=>r.querySelector(s),esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const L={g(k,d){try{const v=localStorage.getItem('kab_'+k);return v===null?d:JSON.parse(v)}catch(e){return d}},s(k,v){try{localStorage.setItem('kab_'+k,JSON.stringify(v))}catch(e){}}};
+const Q0=$('#ba-q'),R=$('#ba-res');if(!Q0||!R)return;
+const go=id=>{const e=document.getElementById(id);if(e){e.style.display='';e.scrollIntoView({behavior:'smooth'})}};
+const norm=s=>String(s).toLowerCase().replace(/[ंँ़\u200d\u200c]/g,'');
+/* हिंदी रूप-भेद (नदी/नदियाँ/नदियों) और अंग्रेज़ी बहुवचन एक जैसे गिने जाते हैं */
+const stem=w=>{if(/^[a-z]+$/.test(w))return w.length>3?w.replace(/s$/,''):w;const r=w.replace(/(ाओ|ाए|ियो|िया|ो|े|ी|ा)$/,'');return r.length>=2?r:w};
+const toks=s=>norm(s).split(/[^\p{L}\p{M}\p{N}]+/u).filter(Boolean).map(stem).filter(w=>w.length>1);
+const lev=(a,b)=>{const m=[...Array(b.length+1).keys()];for(let i=1;i<=a.length;i++){let p=m[0];m[0]=i;for(let j=1;j<=b.length;j++){const t=m[j];m[j]=Math.min(m[j]+1,m[j-1]+1,p+(a[i-1]===b[j-1]?0:1));p=t}}return m[b.length]};
+const SYN=Object.fromEntries('india भारत|bharat भारत|history इतिहास|culture संस्कृति|constitution संविधान|science विज्ञान|geography भूगोल|economy अर्थव्यवस्था|heritage विरासत|freedom स्वतंत्रता|independence स्वतंत्रता|gandhi गांधी|ambedkar आंबेडकर|isro इसरो|river नदी|mountain पर्वत|himalaya हिमालय|desert मरुस्थल|monsoon मानसून|temple मंदिर|fort किला|dance नृत्य|music संगीत|festival त्योहार|food भोजन|language भाषा|space अंतरिक्ष|chandrayaan चंद्रयान|mangalyaan मंगलयान|aryabhata आर्यभट|ashoka अशोक|maurya मौर्य|gupta गुप्त|harappa हड़प्पा|indus सिंधु|mughal मुगल|british ब्रिटिश|quiz क्विज़|capital राजधानी|state राज्य|rajasthan राजस्थान|bihar बिहार|delhi दिल्ली|kerala केरल|goa गोवा|gujarat गुजरात|punjab पंजाब|assam असम|bengal बंगाल|maharashtra महाराष्ट्र|karnataka कर्नाटक|odisha ओडिशा|haryana हरियाणा|sikkim सिक्किम|tamil तमिलनाडु|telangana तेलंगाना|ladakh लद्दाख|kashmir कश्मीर'.split('|').map(x=>x.split(' ')));
+
+/* ---------- खोज का इंडेक्स: लेख + हर लेख के हिस्से + राज्य + समयरेखा + क्विज़ ---------- */
+const TA='📚 लेख',TS='🗺️ राज्य';let D=null;const disp=new Map();
+function build(){D=[];
+ const add=(type,title,txt,act,sh)=>{D.push({type,title,txt,act,tl:new Set(toks(title)),bt:new Set(toks(title+' '+txt)),sh:sh||title,n:norm(sh||title)});String(title).split(/\s+/).forEach(w=>{const k=stem(norm(w));if(k.length>1&&!disp.has(k))disp.set(k,w)})};
+ const strip=h=>h.replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim();
+ try{if(typeof articles!=='undefined')for(const k in articles){const a=articles[k],sh=a.title.split(':')[0].trim(),parts=a.html.split('<h3>'),hs=parts.slice(1).map(p=>strip(p.slice(0,p.indexOf('</h3>'))).replace(/^\d+\.\s*/,''));
+  add(TA,a.title,strip(parts[0])+' '+hs.join(' '),()=>openArticle(k),sh);
+  parts.slice(1).forEach((p,i)=>add('📖 '+sh,hs[i],strip(p.slice(p.indexOf('</h3>')+5)),()=>{openArticle(k);setTimeout(()=>{const x=[...document.querySelectorAll('#articleContent h3')].find(e=>norm(e.textContent).includes(norm(hs[i])));x&&x.scrollIntoView({behavior:'smooth'})},400)}))}}catch(e){}
+ try{if(typeof states!=='undefined')[...states,...uts].forEach(s=>add(TS,s[0],'राजधानी '+s[1],()=>go('states')))}catch(e){}
+ document.querySelectorAll('.timeline-item').forEach(e=>add('⏳ समयरेखा',e.querySelector('strong').textContent,e.querySelector('p').textContent,()=>go('timeline')));
+ try{if(typeof questions!=='undefined')questions.forEach(q=>add('🧠 क्विज़',q.q,q.o.join(' ')+' '+q.e,()=>go('quiz')))}catch(e){}}
+
+/* ---------- सीखना: पिछली गतिविधि सिर्फ़ इसी फ़ोन में ---------- */
+const learn=()=>L.g('learn',true);
+const prune=pf=>Object.fromEntries(Object.entries(pf).map(([k,v])=>[k,v*.97]).filter(x=>x[1]>.3).sort((a,b)=>b[1]-a[1]).slice(0,80));
+function rec(q){q=(q||'').trim();if(!learn()||q.length<2)return;const h=L.g('hist',[]),x=h.find(i=>i.q===q);if(x){x.n++;x.t=Date.now()}else h.push({q,t:Date.now(),n:1});h.sort((a,b)=>b.t-a.t);L.s('hist',h.slice(0,40));const pf=L.g('pref',{});toks(q).forEach(w=>pf[w]=(pf[w]||0)+1);L.s('pref',prune(pf))}
+function bump(t){if(!learn())return;const c=L.g('clk',{});c[t]=(c[t]||0)+1;L.s('clk',c);const pf=L.g('pref',{});toks(t).forEach(w=>pf[w]=(pf[w]||0)+2);L.s('pref',prune(pf))}
+const oa=window.openArticle;if(oa)window.openArticle=function(k){oa.apply(this,arguments);try{bump(articles[k].title)}catch(e){}};
+['ia','pp','wm'].forEach(p=>{const i=$('#'+p+'-in'),g=$('#'+p+'-go');if(i&&g){g.addEventListener('click',()=>rec(i.value));i.addEventListener('keydown',e=>{if(e.key==='Enter')rec(i.value)})}});
+
+/* ---------- अंक देना: शब्द मिलान + रूप-भेद + वर्तनी की छोटी गलतियाँ + आपकी रुचि ---------- */
+function score(d,Q,Pf,Ck){let s=0;for(const t of Q){const tl=[...d.tl];
+ if(d.tl.has(t))s+=12;else if(tl.some(w=>w.length>2&&t.length>2&&(w.startsWith(t)||t.startsWith(w))))s+=6;else if(t.length>3&&tl.some(w=>Math.abs(w.length-t.length)<2&&lev(t,w)<=1))s+=4;
+ if(d.bt.has(t))s+=3}
+ if(!s)return null;const b=Math.min(6,[...d.tl].reduce((a,w)=>a+(Pf[w]||0),0)*.4)+Math.min(8,(Ck[d.title]||0)*2);return{s:s+b,p:b>0}}
+function search(q){if(!D)build();const base=toks(q),Q=[...new Set(base.flatMap(t=>SYN[t]?[t,...toks(SYN[t])]:[t]))],Pf=L.g('pref',{}),Ck=L.g('clk',{}),seen={},out=[];
+ for(const o of D.map(d=>({d,x:score(d,Q,Pf,Ck)})).filter(o=>o.x).sort((a,b)=>b.x.s-a.x.s)){seen[o.d.type]=(seen[o.d.type]||0)+1;if(seen[o.d.type]<=2)out.push(o);if(out.length>=7)break}
+ return{out,Q,base}}
+const snip=(d,Q)=>{const ss=d.txt.split(/[।.]/);return(ss.find(s=>toks(s).some(w=>Q.includes(w)))||ss[0]).trim().slice(0,110)};
+
+/* ---------- स्क्रीन पर दिखाना ---------- */
+function chip(t,i){const b=document.createElement('button');b.className='kab3-chip';b.textContent=(i?i+' ':'')+t;b.onclick=()=>{Q0.value=t;rec(t);Q0.dispatchEvent(new Event('input'));Q0.focus()};return b}
+function render(v){R.style.display='block';R.querySelectorAll(':scope>b,:scope>p,.ba-hit,.kab3').forEach(e=>e.remove());
+ const{out,Q,base}=search(v),n=norm(v),ch=document.createElement('div'),seenS=new Set([v]),box=document.createElement('div');ch.className='kab3 kab3-chips';box.className='kab3';
+ L.g('hist',[]).forEach(x=>{if(norm(x.q).includes(n)&&!seenS.has(x.q)&&seenS.size<4){seenS.add(x.q);ch.appendChild(chip(x.q,'🕘'))}});
+ D.forEach(d=>{if(seenS.size<6&&d.n.length>n.length&&d.n.includes(n)&&!seenS.has(d.sh)){seenS.add(d.sh);ch.appendChild(chip(d.sh,'🔎'))}});
+ if(ch.children.length)R.prepend(ch);
+ if(out.length){box.innerHTML='<h5>⭐ सबसे प्रासंगिक नतीजे</h5>';
+  out.forEach(o=>{const b=document.createElement('button');b.className='ba-hit';b.innerHTML=esc(o.d.type)+' — <b>'+esc(o.d.title)+'</b>'+(o.x.p?'<span class="kab3-star">⭐ आपके लिए</span>':'')+'<small>'+esc(snip(o.d,Q))+'</small>';b.onclick=()=>{R.style.display='none';rec(v);bump(o.d.title);o.d.act()};box.appendChild(b)})}
+ else{const bad=base.find(t=>!D.some(d=>d.bt.has(t)));let dm=null,best=3;if(bad&&bad.length>2)disp.forEach((w,k)=>{const l=lev(bad,k);if(l<best){best=l;dm=w}});
+  box.innerHTML='<p style="padding:10px">साइट के अंदर इसके लिए कुछ नहीं मिला।</p>';if(dm)box.appendChild(chip(dm,'क्या आप ये खोज रहे थे:'));
+  const rf=document.createElement('button');rf.className='ba-btn sm';rf.textContent='🔎 Resource Finder में खोजें';rf.onclick=()=>{R.style.display='none';const i=$('#br-query');if(i&&window.brSearch){i.value=v;go('bharat-resource');window.brSearch()}};box.appendChild(rf)}
+ R.appendChild(box)}
+function home(){if(!D)build();R.style.display='block';R.replaceChildren();const box=document.createElement('div');box.className='kab3',h=L.g('hist',[]).slice(0,8);
+ if(h.length){box.innerHTML='<h5>🕘 आपकी पिछली खोज</h5>';const c=document.createElement('div');c.className='kab3-chips';h.forEach(x=>c.appendChild(chip(x.q)));box.appendChild(c)}
+ const Pf=L.g('pref',{});let sg=D.filter(d=>d.type===TA||d.type===TS).map(d=>({d,v:[...d.tl].reduce((a,w)=>a+(Pf[w]||0),0)})).filter(o=>o.v>0).sort((a,b)=>b.v-a.v).slice(0,5).map(o=>o.d.sh);const mine=sg.length>0;if(!mine)sg=['बिहार','भारत का संविधान','आर्यभट','गंगा नदी','सिंधु घाटी'];
+ box.insertAdjacentHTML('beforeend','<h5>'+(mine?'✨ आपकी रुचि के अनुसार':'🔥 लोकप्रिय खोजें')+'</h5>');const c2=document.createElement('div');c2.className='kab3-chips';sg.forEach(t=>c2.appendChild(chip(t)));box.appendChild(c2);R.appendChild(box)}
+Q0.addEventListener('focus',()=>{if(!Q0.value.trim())home()});
+Q0.addEventListener('input',()=>{const v=Q0.value.trim();v?render(v):home()});
+Q0.addEventListener('keydown',e=>{if(e.key==='Enter')rec(Q0.value)});
+
+/* ---------- सेटिंग में नियंत्रण ---------- */
+const st=$('#ba-set');
+if(st){st.insertAdjacentHTML('beforeend','<h4>🧠 स्मार्ट सुझाव</h4><label><input type="checkbox" id="x-learn"> मेरी पिछली गतिविधि याद रखें (सिर्फ़ इस फ़ोन में)</label><button class="ba-btn sm alt" id="x-hclr">🕘 खोज इतिहास साफ़ करें</button>');
+ $('#x-learn').checked=learn();$('#x-learn').onchange=e=>L.s('learn',e.target.checked);
+ $('#x-hclr').onclick=()=>{['hist','pref','clk'].forEach(k=>localStorage.removeItem('kab_'+k));const t=$('#ba-toast');if(t){t.textContent='इतिहास साफ़ हो गया';t.style.display='block';setTimeout(()=>t.style.display='none',2000)}}}
+})();
+</script>
+<!-- ═══ BHARAT ADD-ON v3 END ═══ -->
 
 </body>
 </html>
