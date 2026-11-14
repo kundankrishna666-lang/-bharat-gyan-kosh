@@ -1471,6 +1471,42 @@ if(st){st.insertAdjacentHTML('beforeend','<h4>🧠 स्मार्ट सु�
 })();
 </script>
 <!-- ═══ BHARAT ADD-ON v3 END ═══ -->
+<!-- ═══ BHARAT ADD-ON v4 START (वर्तनी सुधार) ═══
+  v3 वाले ब्लॉक के ठीक बाद, </body> से पहले चिपकाएँ। पुराना कोड नहीं बदलना। -->
+<script>
+(function(){
+const $=(s,r=document)=>r.querySelector(s),esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const Q0=$('#ba-q'),R=$('#ba-res');if(!Q0||!R)return;
+/* मात्रा/उच्चारण की आम गड़बड़ियाँ एक जैसी गिनी जाती हैं: ि/ी, ु/ू, श/ष/स, ण/न, ं/ँ आदि */
+const ph=w=>w.toLowerCase().replace(/[ंँ़्]/g,'').replace(/ी/g,'ि').replace(/ू/g,'ु').replace(/ै/g,'े').replace(/ौ/g,'ो').replace(/[शष]/g,'स').replace(/ण/g,'न').replace(/ृ/g,'र').replace(/(.)\1+/g,'$1');
+const lev=(a,b)=>{const m=[...Array(b.length+1).keys()];for(let i=1;i<=a.length;i++){let p=m[0];m[0]=i;for(let j=1;j<=b.length;j++){const t=m[j];m[j]=Math.min(m[j]+1,m[j-1]+1,p+(a[i-1]===b[j-1]?0:1));p=t}}return m[b.length]};
+/* साइट के अपने शब्दों की सूची (लेख, राज्य, समयरेखा, क्विज़…) */
+let V=null;
+function buildV(){if(V)return;V=new Map();let t=document.body.innerText||'';try{for(const k in articles)t+=' '+articles[k].html.replace(/<[^>]+>/g,' ')}catch(e){}
+ (t.match(/[\p{L}\p{M}]{3,}/gu)||[]).forEach(w=>{const f=ph(w);if(!V.has(f))V.set(f,{w})})}
+function correct(v){buildV();return v.split(/(\s+)/).map(w=>{if(w.length<4||/^\s*$/.test(w)||/\d/.test(w))return w;const f=ph(w),e=V.get(f);if(e)return e.w;
+ const lim=f.length>=8?2:1;let best=null,bd=9;V.forEach((x,k)=>{if(Math.abs(k.length-f.length)<=lim){const d=lev(f,k);if(d<=lim&&d<bd){bd=d;best=x}}});return best?best.w:w}).join('')}
+/* Wikipedia: सीधा → उनका "क्या आप… थे" सुझाव → शुरुआती अक्षरों से → मिलते-जुलते शब्द */
+async function wr(q){const l=/[\u0900-\u097F]/.test(q)?'hi':'en',api='https://'+l+'.wikipedia.org/w/api.php?origin=*&format=json&',ex='&prop=extracts&exintro=1&explaintext=1&exchars=450';
+ const one=async(g,k,s)=>{const j=await (await fetch(api+'action=query&generator='+g+'&'+k+'limit=1&'+k+'search='+encodeURIComponent(s)+ex)).json();const p=Object.values((j.query||{}).pages||{})[0];return p&&p.extract?p:null};
+ let p=await one('search','gsr',q);
+ if(!p){const j=await (await fetch(api+'action=query&list=search&srlimit=1&srinfo=suggestion&srsearch='+encodeURIComponent(q))).json(),s=j.query&&j.query.searchinfo&&j.query.searchinfo.suggestion;if(s)p=await one('search','gsr',s)}
+ if(!p)p=await one('prefixsearch','gps',q);
+ if(!p)p=await one('search','gsr',q.split(/\s+/).map(w=>w+'~').join(' '));
+ return p&&{t:p.title,x:p.extract,u:'https://'+l+'.wikipedia.org/?curid='+p.pageid}}
+const noFix=new Set();let t4;
+function banner(o,c){const d=document.createElement('div');d.className='kab-wiki';d.innerHTML='<small>“'+esc(o)+'” की जगह “<b>'+esc(c)+'</b>” के नतीजे दिखा रहे हैं। </small>';
+ const b=document.createElement('button');b.className='kab3-chip';b.textContent='“'+o+'” ही खोजें';b.onclick=()=>{noFix.add(o);Q0.value=o;Q0.dispatchEvent(new Event('input'))};d.appendChild(b);R.prepend(d)}
+async function fix(v){if(Q0.value.trim()!==v||R.style.display==='none')return;
+ if(!noFix.has(v)){const c=correct(v);if(c&&c!==v){Q0.value=c;Q0.dispatchEvent(new Event('input'));banner(v,c);return}}
+ if(R.querySelector('.kab-wiki'))return;
+ try{const r=await wr(v);if(!r||Q0.value.trim()!==v||R.querySelector('.kab-wiki'))return;
+  const d=document.createElement('div');d.className='kab-wiki';d.innerHTML='<b>📖 '+esc(r.t)+'</b> <small>(Wikipedia)</small><p style="margin:6px 0;font-size:14px;line-height:1.7">'+esc(r.x)+'</p><a href="'+esc(r.u)+'" target="_blank" rel="noopener">पूरा लेख पढ़ें ↗</a>';
+  const a=R.querySelector('.kab-ans');a?a.after(d):R.prepend(d)}catch(e){}}
+Q0.addEventListener('input',()=>{clearTimeout(t4);const v=Q0.value.trim();if(v.length<3)return;t4=setTimeout(()=>fix(v),1300)});
+})();
+</script>
+<!-- ═══ BHARAT ADD-ON v4 END ═══ -->
 
 </body>
 </html>
